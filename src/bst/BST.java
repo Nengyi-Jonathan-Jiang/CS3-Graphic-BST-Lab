@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BST<T extends Comparable<T>> implements Iterable<T> {
     BSTNode<T> root = null;
@@ -183,12 +184,6 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
             this.value = value;
         }
 
-        public void forEach(Consumer<? super T> action) {
-            if (left != null) left.forEach(action);
-            action.accept(value);
-            if (right != null) right.forEach(action);
-        }
-
         @Override
         public String toString() {
             return toString(this);
@@ -248,6 +243,11 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
         }
         public boolean hasRight() {
             return right != null;
+        }
+
+        public static <T extends Comparable<T>> int getPrintWidth(BSTNode<T> node, Function<BSTNode<T>, Integer> getSelfWidth){
+            if(node == null) return 0;
+            return Math.max(getSelfWidth.apply(node), getPrintWidth(node.left, getSelfWidth) + getPrintWidth(node.right, getSelfWidth));
         }
     }
 }
