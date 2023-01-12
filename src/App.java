@@ -18,13 +18,14 @@ public class App extends JFrame {
 
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
-    BufferedImage frame = new BufferedImage(1000, 8000, BufferedImage.TYPE_INT_RGB);
+    BufferedImage frame = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
     public App(){
         setTitle("Graphics BST Lab");
+        setMinimumSize(new Dimension(50, 50));
         setSize(new Dimension(1000, 800));
-        setResizable(false);
         setVisible(true);
+        setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         addKeyListener(new KeyAdapter() {
@@ -127,6 +128,8 @@ public class App extends JFrame {
 
     @Override
     public void paint(Graphics g) {
+        if(frame.getWidth() != getWidth() || frame.getHeight() != getHeight())
+            frame = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 
         Graphics gg = frame.getGraphics();
 
@@ -134,7 +137,7 @@ public class App extends JFrame {
         ((Graphics2D)gg).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         gg.setColor(Color.WHITE);
-        gg.fillRect(0, 0, 1000, 800);
+        gg.fillRect(0, 0, getWidth(), getHeight());
 
         drawStuff((Graphics2D) gg);
 
@@ -146,13 +149,13 @@ public class App extends JFrame {
 
         graphics.setColor(Color.BLACK);
         graphics.setFont(font);
-        graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, 780);
+        graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, getHeight() - 20);
 
         log.forEach((int i, String message, float t, int status) -> {
             float opacity = (1 - t) * (1 - t);
             Color color = status == -1 ? Color.RED : status == 1 ? Color.BLUE : Color.BLACK;
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int)(opacity * 255), 255), 0)));
-            graphics.drawString(message, 20, 780 - (font.getSize() * 4 / 3) * (i + 1));
+            graphics.drawString(message, 20, getHeight() - 20 - (font.getSize() * 4 / 3) * (i + 1));
         });
 
         drawTree(graphics);
@@ -189,13 +192,13 @@ public class App extends JFrame {
                 if(levels[r][i] == null){
                     if(levels[r][i ^ 1] != null){
                         for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
-                            widths[rr][ii] = 20;    // 60px of nothing
+                            widths[rr][ii] = 20;
                         }
                     }
                 }
                 else{
                     // Calculate width thing
-                    int w = getRenderedSize(levels[r][i].value.toString()).width + 20;  //20px is the padding
+                    int w = getRenderedSize(levels[r][i].value.toString()).width + 20;
 
                     int width = r == height - 1 ? w : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
 
@@ -216,7 +219,7 @@ public class App extends JFrame {
             x[r] = new int[widths[r].length];
             y[r] = new int[widths[r].length];
             for(int i = 0; i < widths[r].length; i++){
-                x[r][i] = sum + widths[r][i] / 2 + getWidth() / 2 - widths[0][0];
+                x[r][i] = sum + widths[r][i] / 2 + getWidth() / 2 - widths[0][0] / 2;
                 y[r][i] = r * 30 + 50;
                 sum += widths[r][i];
             }
