@@ -11,15 +11,16 @@ public class App extends JFrame {
 
     private final BST<Integer> bst = new BST<>();
     private String input = "";
-    private final Log log = new Log(LOG_FADE_TIME, 10);
+    private final Log log = new Log(LOG_FADE_TIME, 15);
 
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
     BufferedImage frame = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
     private static final TreeDrawer[] styles = new TreeDrawer[]{
-            new TreeDrawer1(),
-            new TreeDrawer2()
+            new TreeDrawerInOrder(),
+            new TreeDrawerOffset(),
+            new TreeDrawerStacked(),
     };
     private int currStyle = 0;
 
@@ -50,6 +51,7 @@ public class App extends JFrame {
 
         new Timer(10, e -> repaint()).start();
 
+        evaluateCommand(new Scanner("insert 3 1 0 2 6 4 5 9 11"));
         // First thing to do is help
         evaluateCommand(new Scanner("help"));
 
@@ -93,6 +95,31 @@ public class App extends JFrame {
 
                 Main.printTree(bst);
             }
+            case "insertRand" -> {
+                if(scan.hasNextInt()){
+                    int lo = scan.nextInt();
+                    if(scan.hasNextInt()){
+                        int hi = scan.nextInt();
+                        int num = 1;
+                        if(scan.hasNextInt()) num = scan.nextInt();
+                        StringBuilder c = new StringBuilder("insert");
+                        for(int i = 0; i < num; i++){
+                            c.append(" ").append((int)(Math.random() * (hi - lo + 1)) + lo);
+                        }
+                        evaluateCommand(new Scanner(c.toString()));
+                    }
+                    else{
+                        log.log("Bad input: insertRand should be called with 2-3 int args", -1);
+                    }
+                }
+                else{
+                    log.log("Bad input: insertRand should be called with 2-3 int args", -1);
+                }
+            }
+            case "clear" -> {
+                bst.root = null;
+                log.log("Cleared tree", 1);
+            }
             case "delete" -> {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
@@ -118,12 +145,15 @@ public class App extends JFrame {
             case "help" -> {
                 for(var line : new String[]{
                     "──── Commands ────",
-                    "insert [<number>...] : Adds the values to the BST",
+                    "insert <values:number...> : Adds the values to the BST",
                     "    Example: \"insert 3 1 0 2 6 4 5 9 11\"",
-                    "delete [<number>...] : Deletes the values from the BST",
+                    "insertRand <low:number> <high:number> [amount:number] : inserts <amount> random numbers in the range [<low>, <high>]",
+                    "    Example: \"insertRand 0 99 10\"",
+                    "delete <values:number...> : Deletes the values from the BST",
                     "    Example: \"delete 1 2 3 4\"",
-                    "style [<number>...] : Sets the drawing style of the tree",
+                    "style <style: 1|2|3> : Sets the drawing style of the tree",
                     "    Example: \"style 1\"",
+                    "clear : Deletes the entire tree",
                     "help : Displays this list of commands",
                 }) log.log(line, 1);
             }
@@ -132,7 +162,7 @@ public class App extends JFrame {
                 if(!scan.hasNextInt() || (style = scan.nextInt()) > styles.length || style <= 0)
                     log.log("Invalid parameter to style: Must be an int in the range [1, " + styles.length + "]", -1);
                 else
-                    currStyle = style;
+                    currStyle = style - 1;
             }
             default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
         }
