@@ -2,9 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Scanner;
 
@@ -19,6 +16,12 @@ public class App extends JFrame {
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
     BufferedImage frame = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+
+    private static final TreeDrawer[] styles = new TreeDrawer[]{
+            new TreeDrawer1(),
+            new TreeDrawer2()
+    };
+    private int currStyle = 0;
 
     public App(){
         setTitle("Graphics BST Lab");
@@ -119,8 +122,17 @@ public class App extends JFrame {
                     "    Example: \"insert 3 1 0 2 6 4 5 9 11\"",
                     "delete [<number>...] : Deletes the values from the BST",
                     "    Example: \"delete 1 2 3 4\"",
+                    "style [<number>...] : Sets the drawing style of the tree",
+                    "    Example: \"style 1\"",
                     "help : Displays this list of commands",
                 }) log.log(line, 1);
+            }
+            case "style" -> {
+                int style;
+                if(!scan.hasNextInt() || (style = scan.nextInt()) > styles.length || style <= 0)
+                    log.log("Invalid parameter to style: Must be an int in the range [1, " + styles.length + "]", -1);
+                else
+                    currStyle = style;
             }
             default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
         }
@@ -158,95 +170,6 @@ public class App extends JFrame {
             graphics.drawString(message, 20, getHeight() - 20 - (font.getSize() * 4 / 3) * (i + 1));
         });
 
-        drawTree(graphics);
-    }
-
-    public Dimension getRenderedSize(String text) {
-        Rectangle2D size = font.getStringBounds(text, new FontRenderContext(new AffineTransform(), true, true));
-        return new Dimension((int) size.getWidth(), font.getSize());
-    }
-
-    private void drawTree(Graphics2D graphics){
-        if(bst == null || bst.getRoot() == null) return;
-
-        final int height = bst.getHeight();
-        final BST.BSTNode<Integer>[][] levels = new BST.BSTNode[height][];
-        levels[0] = new BST.BSTNode[]{bst.getRoot()};
-        for(int h = 1; h < height; h++){
-            int size = 1 << h;
-            levels[h] = new BST.BSTNode[size];
-            for(int i = 0; i * 2 < size; i++){
-                var n = levels[h - 1][i];
-                if(n != null){
-                    levels[h][i * 2] = n.getLeft();
-                    levels[h][i * 2 + 1] = n.getRight();
-                }
-            }
-        }
-
-        final int[][] widths = new int[height][];
-        for(int r = height - 1; r >= 0; r--){
-            widths[r] = new int[levels[r].length];
-
-            for(int i = 0; i < levels[r].length; i++){
-                if(levels[r][i] == null){
-                    if(levels[r][i ^ 1] != null){
-                        for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
-                            widths[rr][ii] = 20;
-                        }
-                    }
-                }
-                else{
-                    // Calculate width thing
-                    int w = getRenderedSize(levels[r][i].value.toString()).width + 20;
-
-                    int width = r == height - 1 ? w : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
-
-                    widths[r][i] = width;
-
-                    if(!levels[r][i].hasRight() && !levels[r][i].hasLeft()){
-                        for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
-                            widths[rr][ii] = width;
-                        }
-                    }
-                }
-            }
-        }
-
-        final int[][] x = new int[height][], y = new int[height][];
-        for(int r = 0; r < height; r++){
-            int sum = 0;
-            x[r] = new int[widths[r].length];
-            y[r] = new int[widths[r].length];
-            for(int i = 0; i < widths[r].length; i++){
-                x[r][i] = sum + widths[r][i] / 2 + getWidth() / 2 - widths[0][0] / 2;
-                y[r][i] = r * 30 + 50;
-                sum += widths[r][i];
-            }
-        }
-
-        for(int r = height - 1; r >= 0; r--){
-            for(int i = 0; i < levels[r].length; i++){
-                var node = levels[r][i];
-
-                if(node != null) {
-                    String text = node.value.toString();
-                    var d = getRenderedSize(text);
-                    int X = x[r][i], Y = y[r][i];
-
-                    graphics.setColor(Color.BLACK);
-                    if(node.getParent() != null){
-                        graphics.drawLine(X, Y, x[r - 1][i / 2], y[r - 1][i / 2]);
-                    }
-
-                    graphics.setColor(Color.WHITE);
-                    graphics.fillRect(X - d.width / 2 - 5, Y - d.height / 2 - 5, d.width + 10, d.height + 10);
-
-                    graphics.setColor(Color.BLACK);
-                    graphics.drawString(text, X - d.width / 2, Y + d.height / 2);
-                    graphics.drawRect(X - d.width / 2 - 5, Y - d.height / 2 - 5, d.width + 10, d.height + 10);
-                }
-            }
-        }
+        styles[currStyle].drawTree(bst, getWidth(), graphics);
     }
 }
