@@ -1,5 +1,3 @@
-package bst;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Stack;
@@ -93,6 +91,10 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
                     case ROOT -> root = node.makeRoot();
                 }
             }
+//            T temp = node.value;
+//            erase(temp);
+//            target.value = temp;
+//            return;
         }
 
         if(target.hasLeft()){   // Deg 1, has left
@@ -166,7 +168,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 
     @Override
     public String toString() {
-        return root == null ? "bst.BST{}" : "bst.BST" + root;
+        return root == null ? "BST{}" : "BST" + root;
     }
 
     public BSTNode<T> getRoot() {
@@ -176,7 +178,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
     public static class BSTNode<T extends Comparable<T>> {
         private BSTNode<T> left = null, right = null;
         private BSTNode<T> parent = null;
-        public final T value;
+        public T value;
         private enum ChildType {LEFT, RIGHT, ROOT};
         private ChildType type = ChildType.ROOT;
 
@@ -243,11 +245,6 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
         }
         public boolean hasRight() {
             return right != null;
-        }
-
-        public static <T extends Comparable<T>> int getPrintWidth(BSTNode<T> node, Function<BSTNode<T>, Integer> getSelfWidth){
-            if(node == null) return 0;
-            return Math.max(getSelfWidth.apply(node), getPrintWidth(node.left, getSelfWidth) + getPrintWidth(node.right, getSelfWidth));
         }
     }
 }
