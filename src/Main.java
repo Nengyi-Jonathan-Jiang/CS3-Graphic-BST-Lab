@@ -26,6 +26,55 @@ public class Main {
                 }
             }
         }
+
+        final int[][] widths = new int[height][];
+        for(int r = height - 1; r >= 0; r--){
+            widths[r] = new int[levels[r].length];
+
+            for(int i = 0; i < levels[r].length; i++){
+                if(levels[r][i] == null){
+                    if(levels[r][i ^ 1] != null){
+                        for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
+                            widths[rr][ii] = 4;
+                        }
+                    }
+                }
+                else{
+                    int w = levels[r][i].value.toString().length() + 3;
+                    int width = r == height - 1
+                            ? w
+                            : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
+                    widths[r][i] = width;
+
+                    if(!levels[r][i].hasRight() && !levels[r][i].hasLeft()){
+                        for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
+                            widths[rr][ii] = width;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int r = 0; r < height; r++){
+            for(int i = 0; i < levels[r].length; i++){
+                var val = levels[r][i];
+                int w = widths[r][i];
+
+                if(w == 0) continue;
+
+                if(val == null) {
+                    System.out.print("\u001B[37m[");
+                    System.out.print("-".repeat(w - 3));
+                    System.out.print("]\u001B[0m ");
+                }
+                else {
+                    System.out.print("\u001B[1m[");
+                    printCentered(val.value, w - 3);
+                    System.out.print("]\u001B[0m ");
+                }
+            }
+            System.out.println();
+        }
     }
 
     private static void printCentered(Object x, int w){
