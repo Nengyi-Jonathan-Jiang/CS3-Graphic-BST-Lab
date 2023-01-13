@@ -18,10 +18,8 @@ public class Log {
         log.addFirst(new LogItem(message, status));
 
         // Log to STDOUT
-        switch (status) {
-            case -1 -> System.out.println("\u001B[31m" + message + "\u001B[0m");
-            case 0 -> {}
-            default -> System.out.println("\u001B[35m" + message + "\u001B[0m");
+        if(status != 0){
+            System.out.println(message);
         }
     }
 

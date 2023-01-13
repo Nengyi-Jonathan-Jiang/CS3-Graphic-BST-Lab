@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args){
         new App();
@@ -63,14 +61,14 @@ public class Main {
                 if(w == 0) continue;
 
                 if(val == null) {
-                    System.out.print("\u001B[37m[");
+                    System.out.print("[");
                     System.out.print("-".repeat(w - 3));
-                    System.out.print("]\u001B[0m ");
+                    System.out.print("] ");
                 }
                 else {
-                    System.out.print("\u001B[1m[");
+                    System.out.print("[");
                     printCentered(val.value, w - 3);
-                    System.out.print("]\u001B[0m ");
+                    System.out.print("] ");
                 }
             }
             System.out.println();

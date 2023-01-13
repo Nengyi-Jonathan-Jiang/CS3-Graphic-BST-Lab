@@ -11,7 +11,7 @@ public class App extends JFrame {
 
     private final BST<Integer> bst = new BST<>();
     private String input = "";
-    private final Log log = new Log(LOG_FADE_TIME, 15);
+    private final Log log = new Log(LOG_FADE_TIME, 30);
 
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
@@ -21,6 +21,7 @@ public class App extends JFrame {
             new TreeDrawerInOrder(),
             new TreeDrawerOffset(),
             new TreeDrawerStacked(),
+            new TreeDrawerStackedCentered(),
     };
     private int currStyle = 0;
 
@@ -187,6 +188,8 @@ public class App extends JFrame {
     }
 
     private void drawStuff(Graphics2D graphics){
+        styles[currStyle].drawTree(bst, getWidth(), graphics);
+
         long currentTime = System.currentTimeMillis();
 
         graphics.setColor(Color.BLACK);
@@ -199,7 +202,5 @@ public class App extends JFrame {
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int)(opacity * 255), 255), 0)));
             graphics.drawString(message, 20, getHeight() - 20 - (font.getSize() * 4 / 3) * (i + 1));
         });
-
-        styles[currStyle].drawTree(bst, getWidth(), graphics);
     }
 }
