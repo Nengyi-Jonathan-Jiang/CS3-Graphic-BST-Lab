@@ -39,65 +39,15 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
         BSTNode<T> target = find(value);
         if(target == null) return;
 
-        if(target.hasLeft() && target.hasRight()){
+        if(target.hasLeft() && target.hasRight()){  // Deg 2 case
             BSTNode<T> node = target.getRight();
-            if(!node.hasLeft()){
-                // Special case swap
-
-                BSTNode<T> tp = target.getParent(),
-                        tl = target.getLeft(),
-                        nr = node.getRight();
-
-                target.setRight(nr);
-                target.setLeft((BSTNode<T>)null);
-                node.setLeft(tl);
-
-                switch (target.type) {
-                    case LEFT -> tp.setLeft(node);
-                    case RIGHT -> tp.setRight(node);
-                    case ROOT -> root = node.makeRoot();
-                }
-
-                node.setRight(target);
-            }
-            else {
-                while (node.hasLeft())
-                    node = node.getLeft();
-
-                BSTNode<T>
-                        tp = target.getParent(),
-                        tl = target.getLeft(),
-                        tr = target.getRight(),
-                        np = node.getParent(),
-                        nl = node.getLeft(),
-                        nr = node.getRight();
-
-                target.setLeft(nl);
-                target.setRight(nr);
-                node.setLeft(tl);
-                node.setRight(tr);
-
-                BSTNode.ChildType nt = node.type, tt = target.type;
-
-                switch (nt) {
-                    case LEFT -> np.setLeft(target);
-                    case RIGHT -> np.setRight(target);
-                    case ROOT -> throw new Error("Cannot happen");
-                }
-
-                switch (tt) {
-                    case LEFT -> tp.setLeft(node);
-                    case RIGHT -> tp.setRight(node);
-                    case ROOT -> root = node.makeRoot();
-                }
-            }
-//            T temp = node.value;
-//            erase(temp);
-//            target.value = temp;
-//            return;
+            while (node.hasLeft())
+                node = node.getLeft();
+            T temp = node.value;
+            erase(temp);
+            target.value = temp;
         }
-
-        if(target.hasLeft()){   // Deg 1, has left
+        else if(target.hasLeft()){   // Deg 1, has left
             switch (target.type) {
                 case LEFT -> target.parent.setLeft(target.getLeft());
                 case RIGHT -> target.parent.setRight(target.getLeft());
@@ -181,6 +131,10 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
         public T value;
         private enum ChildType {LEFT, RIGHT, ROOT};
         private ChildType type = ChildType.ROOT;
+
+        public ChildType getChildType(){
+            return parent == null ? ChildType.ROOT : this == parent.getLeft() ? ChildType.LEFT : ChildType.RIGHT;
+        }
 
         public BSTNode(T value) {
             this.value = value;

@@ -7,7 +7,10 @@ import java.util.Stack;
 
 public abstract class TreeDrawer {
 
-    protected static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+    public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+    public static int getNodePadding(){
+        return font.getSize() / 2;
+    }
 
     protected static Dimension getRenderedSize(String text) {
         Rectangle2D size = font.getStringBounds(text, new FontRenderContext(new AffineTransform(), true, true));
@@ -39,7 +42,7 @@ public abstract class TreeDrawer {
         int[][] y = new int[height][];
         for(int h = 0; h < height; h++){
             y[h] = new int[1 << h];
-            Arrays.fill(y[h], h * 30 + 50);
+            Arrays.fill(y[h], (h + 1) * getNodePadding() * 6);
         }
 
         graphics.setFont(font);

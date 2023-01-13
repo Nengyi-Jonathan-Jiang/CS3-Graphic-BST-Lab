@@ -43,6 +43,12 @@ public class App extends JFrame {
                 else if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     evaluateCommand();
                 }
+                else if(e.getKeyCode() == KeyEvent.VK_MINUS && e.isControlDown()){
+                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize() * 0.67f);
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_EQUALS && e.isControlDown()){
+                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize() * 1.5f);
+                }
                 else{
                     char c = e.getKeyChar();
                     if((c + "").matches("^[ -~]$")) input += c;
