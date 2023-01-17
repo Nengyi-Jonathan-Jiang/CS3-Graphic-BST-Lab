@@ -1,13 +1,19 @@
 import java.util.*;
 
-public abstract class Traversal<T extends Comparable<T>> {
-    protected Traversal() { }
+public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> {
+    protected final BST<T> tree;
 
-    public abstract Iterable<T> traverse(BST<T> tree);
+    protected Traversal(BST<T> tree) {
+        this.tree = tree;
+    }
 
     public static class PreOrder<T extends Comparable<T>> extends Traversal<T> {
-        public Iterable<T> traverse(BST<T> tree) {
-            return () -> tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
+        public PreOrder(BST<T> tree) {
+            super(tree);
+        }
+
+        public Iterator<T> iterator() {
+            return tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
                 private final Stack<BSTNode<T>> nodes;
 
                 {
@@ -32,8 +38,12 @@ public abstract class Traversal<T extends Comparable<T>> {
     }
 
     public static class PostOrder<T extends Comparable<T>> extends Traversal<T> {
-        public Iterable<T> traverse(BST<T> tree) {
-            return () -> tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
+        public PostOrder(BST<T> tree) {
+            super(tree);
+        }
+
+        public Iterator<T> iterator() {
+            return tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
                 private final Stack<BSTNode<T>> nodes = new Stack<>();
                 private BSTNode<T> curr = tree.getRoot();
 
@@ -62,9 +72,12 @@ public abstract class Traversal<T extends Comparable<T>> {
 
     public static class InOrder<T extends Comparable<T>> extends Traversal<T> {
 
-        @Override
-        public Iterable<T> traverse(BST<T> tree) {
-            return () -> tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
+        public InOrder(BST<T> tree) {
+            super(tree);
+        }
+
+        public Iterator<T> iterator() {
+            return tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
                 private final Stack<BSTNode<T>> nodes = new Stack<>();
                 private BSTNode<T> curr = tree.getRoot();
 
@@ -88,9 +101,12 @@ public abstract class Traversal<T extends Comparable<T>> {
 
     public static class ReverseOrder<T extends Comparable<T>> extends Traversal<T> {
 
-        @Override
-        public Iterable<T> traverse(BST<T> tree) {
-            return () -> tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
+        public ReverseOrder(BST<T> tree) {
+            super(tree);
+        }
+
+        public Iterator<T> iterator() {
+            return tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
                 private final Stack<BSTNode<T>> nodes = new Stack<>();
                 private BSTNode<T> curr = tree.getRoot();
 
@@ -114,9 +130,12 @@ public abstract class Traversal<T extends Comparable<T>> {
 
     public static class LevelOrder<T extends Comparable<T>> extends Traversal<T> {
 
-        @Override
-        public Iterable<T> traverse(BST<T> tree) {
-            return () -> tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
+        public LevelOrder(BST<T> tree) {
+            super(tree);
+        }
+
+        public Iterator<T> iterator() {
+            return tree.getRoot() == null ? Collections.emptyIterator() : new Iterator<>() {
                 private final Queue<BSTNode<T>> nodes = new LinkedList<>(Collections.singleton(tree.getRoot()));
 
                 @Override

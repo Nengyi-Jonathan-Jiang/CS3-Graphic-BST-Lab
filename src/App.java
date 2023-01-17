@@ -175,11 +175,11 @@ public class App extends JFrame {
                 try {
                     StringBuilder sb = new StringBuilder("[ ");
                     (switch (scan.next()){
-                        case "preorder" -> bst.preOrder();
-                        case "postorder" -> bst.postOrder();
-                        case "inorder" -> bst.inOrder();
-                        case "reverseorder" -> bst.reverseOrder();
-                        case "levelorder" -> bst.levelOrder();
+                        case "preorder" -> new Traversal.PreOrder<>(bst);
+                        case "postorder" -> new Traversal.PostOrder<>(bst);
+                        case "inorder" -> new Traversal.InOrder<>(bst);
+                        case "reverseorder" -> new Traversal.ReverseOrder<>(bst);
+                        case "levelorder" -> new Traversal.LevelOrder<>(bst);
                         default -> throw new Exception();
                     }).forEach(i -> sb.append(i).append(" "));
                     sb.append("]");
