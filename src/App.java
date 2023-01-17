@@ -189,6 +189,12 @@ public class App extends JFrame {
                     log.log("Invalid parameter to traverse: Must be an one of \"preorder\", \"postorder\", or \"inorder\"", -1);
                 }
             }
+            case "query" -> {
+                if(scan.hasNext()) switch(scan.next()) {
+
+                }
+                else log.log("Invalid parameter to query: Must be one of numleaves, numlevels, width, diameter, size, levelwidths, isfull, getlargest, getsmallest");
+            }
             default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
         }
     }

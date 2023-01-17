@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Stream;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
 public class BST<T extends Comparable<T>> implements Set<T> {
@@ -249,6 +248,9 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return node == null ? 0 : node.isLeaf() ? 1 : countLeaves(node.getLeft()) + countLeaves(node.getRight());
     }
 
+    /**
+     * @return The number of levels in the tree.
+     */
     public int countLevels() {
         return root.getHeight();
     }
@@ -279,5 +281,59 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return 1 + (root.hasLeft() ? root.getLeft().getHeight() : 0) + (root.hasRight() ? root.getRight().getHeight() : 0);
     }
 
+    public boolean isFullTree() {
+        return root == null || isFull(root);
+    }
 
+    private boolean isFull(BSTNode<T> node){
+        return node.getDegree() == 0 || node.getDegree() == 2 && isFull(node.getLeft()) && isFull(node.getRight());
+    }
+
+    public T getLargest() {
+        return root == null ? null : getLargest(root);
+    }
+
+    private T getLargest(BSTNode<T> node) {
+        return node.hasRight() ? getLargest(node.getRight()) : node.value;
+    }
+
+    public T getSmallest() {
+        return root == null ? null : getSmallest(root);
+    }
+
+    private T getSmallest(BSTNode<T> node) {
+        return node.hasLeft() ? getLargest(node.getLeft()) : node.value;
+    }
+
+    public T[][] getLevels(){
+        if(root == null) return (T[][]) new Comparable[][]{};
+
+        final int levels = countLevels();
+        final T[][] res = (T[][]) new Comparable[levels][];
+        final BSTNode<T>[][] nodes = new BSTNode[levels][];
+        nodes[0] = new BSTNode[]{root};
+        res[0] = (T[]) new Comparable[]{root.value};
+
+        for(int h = 1; h < levels; h++){
+            int size = 1 << h;
+            nodes[h] = new BSTNode[size];
+            for(int i = 0; i * 2 < size; i++){
+                var n = nodes[h - 1][i];
+                if(n != null){
+                    var l = nodes[h][i * 2] = n.getLeft();
+                    var r = nodes[h][i * 2 + 1] = n.getRight();
+                    if(l != null) res[h][i * 2] = l.value;
+                    if(r != null) res[h][i * 2] = r.value;
+                }
+            }
+        }
+        return res;
+    }
+
+    public int[] getLevelWidths(){
+        // Java FP is nice, but verbose
+        // Whatever, I will use it because I am lazy
+        // Plus it is not too unreadable
+        return Arrays.stream(getLevels()).mapToInt(i -> (int) Arrays.stream(i).filter(Objects::nonNull).count()).toArray();
+    }
 }
