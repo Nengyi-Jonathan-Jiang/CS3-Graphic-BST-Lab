@@ -14,21 +14,21 @@ public abstract class TreeDrawer {
 
     protected static Dimension getRenderedSize(String text) {
         Rectangle2D size = font.getStringBounds(text, new FontRenderContext(new AffineTransform(), true, true));
-        return new Dimension((int) size.getWidth(), font.getSize());
+        return new Dimension((int) size.getWidth(), (int) size.getHeight());
     }
 
-    protected abstract int[][] calculatePositions(BST.BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics);
+    protected abstract int[][] calculatePositions(BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics);
 
     public final void drawTree(BST<Integer> bst, int windowWidth, Graphics2D graphics){
         if(bst == null || bst.getRoot() == null) return;
 
         final int height = bst.getHeight();
-        final BST.BSTNode<Integer>[][] levels = new BST.BSTNode[height][];
-        levels[0] = new BST.BSTNode[]{bst.getRoot()};
+        final BSTNode<Integer>[][] levels = new BSTNode[height][];
+        levels[0] = new BSTNode[]{bst.getRoot()};
 
         for(int h = 1; h < height; h++){
             int size = 1 << h;
-            levels[h] = new BST.BSTNode[size];
+            levels[h] = new BSTNode[size];
             for(int i = 0; i * 2 < size; i++){
                 var n = levels[h - 1][i];
                 if(n != null){
@@ -42,7 +42,9 @@ public abstract class TreeDrawer {
         int[][] y = new int[height][];
         for(int h = 0; h < height; h++){
             y[h] = new int[1 << h];
-            Arrays.fill(y[h], (h + 1) * getNodePadding() * 6);
+            Arrays.fill(y[h],
+                    (h * 6 + 1) * getNodePadding() + 40 + getRenderedSize("|").height / 2
+            );
         }
 
         graphics.setFont(font);
@@ -56,17 +58,19 @@ public abstract class TreeDrawer {
                     var d = getRenderedSize(text);
                     int X = x[h][i], Y = y[h][i];
 
+                    var fm = graphics.getFontMetrics();
+
                     graphics.setColor(Color.BLACK);
                     if(node.getParent() != null){
                         graphics.drawLine(X, Y, x[h - 1][i / 2], y[h - 1][i / 2]);
                     }
 
                     graphics.setColor(Color.WHITE);
-                    graphics.fillRect(X - d.width / 2 - 5, Y - d.height / 2 - 5, d.width + 10, d.height + 10);
+                    graphics.fillRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 
                     graphics.setColor(Color.BLACK);
-                    graphics.drawString(text, X - d.width / 2, Y + d.height / 2);
-                    graphics.drawRect(X - d.width / 2 - 5, Y - d.height / 2 - 5, d.width + 10, d.height + 10);
+                    graphics.drawString(text, X - d.width / 2, Y - fm.getHeight() / 2 + fm.getAscent());
+                    graphics.drawRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
                 }
             }
         }
@@ -76,7 +80,7 @@ public abstract class TreeDrawer {
 class TreeDrawerOffset extends TreeDrawer {
 
     @Override
-    public int[][] calculatePositions(BST.BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+    public int[][] calculatePositions(BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
         final int[][] widths = new int[height][];
         for(int r = height - 1; r >= 0; r--){
             widths[r] = new int[levels[r].length];
@@ -85,13 +89,13 @@ class TreeDrawerOffset extends TreeDrawer {
                 if(levels[r][i] == null){
                     if(levels[r][i ^ 1] != null){
                         for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
-                            widths[rr][ii] = 20;
+                            widths[rr][ii] = getNodePadding() * 4;
                         }
                     }
                 }
                 else{
                     // Calculate width thing
-                    int w = getRenderedSize(levels[r][i].value.toString()).width + 20;
+                    int w = getRenderedSize(levels[r][i].value.toString()).width + getNodePadding() * 4;
 
                     int width = r == height - 1 ? w : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
 
@@ -123,8 +127,8 @@ class TreeDrawerOffset extends TreeDrawer {
 class TreeDrawerStacked extends TreeDrawer {
 
     @Override
-    public int[][] calculatePositions(BST.BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
-        final int LR_OFFSET = 10;
+    public int[][] calculatePositions(BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+        final int LR_OFFSET = getNodePadding() * 2;
 
         final int[][] widths = new int[height][];
         final int[][] pos = new int[height][];
@@ -144,7 +148,7 @@ class TreeDrawerStacked extends TreeDrawer {
                     var right = node.getRight();
 
                     // Raw width of node (rect)
-                    int w = getRenderedSize(levels[h][i].value.toString()).width + 20;
+                    int w = getRenderedSize(levels[h][i].value.toString()).width + getNodePadding() * 4;
 
                     // degree 0: node width is text width, node pos is centered, no padding
                     if (left == null && right == null) {
@@ -216,8 +220,8 @@ class TreeDrawerStacked extends TreeDrawer {
 class TreeDrawerStackedCentered extends TreeDrawer {
 
     @Override
-    public int[][] calculatePositions(BST.BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
-        final int LR_OFFSET = 10;
+    public int[][] calculatePositions(BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+        final int LR_OFFSET = getNodePadding() * 2;
 
         final int[][] widths = new int[height][];
         final int[][] pos = new int[height][];
@@ -237,7 +241,7 @@ class TreeDrawerStackedCentered extends TreeDrawer {
                     var right = node.getRight();
 
                     // Raw width of node (rect)
-                    int w = getRenderedSize(levels[h][i].value.toString()).width + 20;
+                    int w = getRenderedSize(levels[h][i].value.toString()).width + getNodePadding() * 4;
 
                     // degree 0: node width is text width, node pos is centered, no padding
                     if (left == null && right == null) {
@@ -309,14 +313,14 @@ class TreeDrawerStackedCentered extends TreeDrawer {
 class TreeDrawerInOrder extends TreeDrawer {
 
     @Override
-    public int[][] calculatePositions(BST.BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+    public int[][] calculatePositions(BSTNode<Integer>[][] levels, int height, int windowWidth, Graphics2D graphics) {
         // Inorder traversal
 
         int[][] x = new int[height][];
         for(int h = 0; h < height; h++) x[h] = new int[1 << h];
         int left = 0;
 
-        Stack<BST.BSTNode<Integer>> nStk = new Stack<>();
+        Stack<BSTNode<Integer>> nStk = new Stack<>();
         Stack<Integer> iStk = new Stack<>(), hStk = new Stack<>();
         var currN = levels[0][0];
         int currI = 0;
@@ -335,7 +339,7 @@ class TreeDrawerInOrder extends TreeDrawer {
                 int i = iStk.pop();
                 int h = hStk.pop();
 
-                int w = getRenderedSize(node.value.toString()).width + 5;
+                int w = getRenderedSize(node.value.toString()).width + getNodePadding();
                 x[h][i] = left + w / 2;
                 left += w;
 

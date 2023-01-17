@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.Scanner;
 
 public class App extends JFrame {
-    private static final long LOG_FADE_TIME = 8000;
+    private static final long LOG_FADE_TIME = 16000;
     private static final long BLINKER_TIME = 800;
 
     private final BST<Integer> bst = new BST<>();
@@ -44,10 +44,10 @@ public class App extends JFrame {
                     evaluateCommand();
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_MINUS && e.isControlDown()){
-                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize() * 0.67f);
+                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize2D() * 0.9f);
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_EQUALS && e.isControlDown()){
-                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize() * 1.5f);
+                    TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize2D() * 1.1f);
                 }
                 else{
                     char c = e.getKeyChar();
@@ -87,11 +87,11 @@ public class App extends JFrame {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
-                        if(bst.has(val)){
+                        if(bst.contains(val)){
                             log.log(val + " is already in the tree", 1);
                         }
                         else {
-                            bst.insert(val);
+                            bst.add(val);
                             log.log("Added " + val + " to the tree", 1);
                         }
                     }
@@ -131,11 +131,11 @@ public class App extends JFrame {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
-                        if(!bst.has(val)){
+                        if(!bst.contains(val)){
                             log.log(val + " is not in the tree", 1);
                         }
                         else {
-                            bst.erase(val);
+                            bst.remove(val);
                             log.log("Deleted " + val + " from the tree", 1);
                         }
                     }
@@ -171,6 +171,24 @@ public class App extends JFrame {
                 else
                     currStyle = style - 1;
             }
+            case "traverse" -> {
+                try {
+                    StringBuilder sb = new StringBuilder("[ ");
+                    (switch (scan.next()){
+                        case "preorder" -> bst.preOrder();
+                        case "postorder" -> bst.postOrder();
+                        case "inorder" -> bst.inOrder();
+                        case "reverseorder" -> bst.reverseOrder();
+                        case "levelorder" -> bst.levelOrder();
+                        default -> throw new Exception();
+                    }).forEach(i -> sb.append(i).append(" "));
+                    sb.append("]");
+                    log.log(sb.toString(), 1);
+                }
+                catch (Exception e){
+                    log.log("Invalid parameter to traverse: Must be an one of \"preorder\", \"postorder\", or \"inorder\"", -1);
+                }
+            }
             default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
         }
     }
@@ -203,7 +221,7 @@ public class App extends JFrame {
         graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, getHeight() - 20);
 
         log.forEach((int i, String message, float t, int status) -> {
-            float opacity = (1 - t) * (1 - t);
+            double opacity = 1 - Math.pow(t, 4);
             Color color = status == -1 ? Color.RED : status == 1 ? Color.BLUE : Color.BLACK;
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int)(opacity * 255), 255), 0)));
             graphics.drawString(message, 20, getHeight() - 20 - (font.getSize() * 4 / 3) * (i + 1));

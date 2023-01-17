@@ -11,11 +11,11 @@ public class Main {
         }
 
         final int height = bst.getHeight();
-        final BST.BSTNode<Integer>[][] levels = new BST.BSTNode[height][];
-        levels[0] = new BST.BSTNode[]{bst.getRoot()};
+        final BSTNode<Integer>[][] levels = new BSTNode[height][];
+        levels[0] = new BSTNode[]{bst.getRoot()};
         for(int h = 1; h < height; h++){
             int size = 1 << h;
-            levels[h] = new BST.BSTNode[size];
+            levels[h] = new BSTNode[size];
             for(int i = 0; i * 2 < size; i++){
                 var n = levels[h - 1][i];
                 if(n != null){
