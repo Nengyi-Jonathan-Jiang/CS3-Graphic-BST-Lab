@@ -1,6 +1,5 @@
 public class BSTNode<T extends Comparable<T>> {
-    private BSTNode<T> left = null, right = null;
-    private BSTNode<T> parent = null;
+    private BSTNode<T> left = null, right = null, parent = null;
     public T value;
 
     public enum ChildType {LEFT, RIGHT, ROOT}
@@ -29,7 +28,7 @@ public class BSTNode<T extends Comparable<T>> {
     }
 
     public int getHeight() {
-        return 1 + Math.max(left == null ? 0 : left.getHeight(), right == null ? 0 : right.getHeight());
+        return 1 + Math.max(left == null ? -1 : left.getHeight(), right == null ? -1 : right.getHeight());
     }
 
     public BSTNode<T> makeRoot() {

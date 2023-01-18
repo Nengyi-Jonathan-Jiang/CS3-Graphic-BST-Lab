@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class App extends JFrame {
@@ -25,7 +26,7 @@ public class App extends JFrame {
     };
     private int currStyle = 0;
 
-    public App(){
+    public App(boolean isRedBlackTree){
         setTitle("Graphics BST Lab");
         setMinimumSize(new Dimension(50, 50));
         setSize(new Dimension(1000, 800));
@@ -82,18 +83,17 @@ public class App extends JFrame {
     private void evaluateCommand(Scanner scan){
         if(!scan.hasNext()) return;
         String command;
-        switch(command = scan.next()){
+        switch(command = scan.next().toLowerCase()){
             case "insert" -> {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
-                        if(bst.contains(val)){
-                            log.log(val + " is already in the tree", 1);
-                        }
-                        else {
+//                        if(bst.contains(val))
+//                            log.log(val + " is already in the tree", 1);
+//                        else {
                             bst.add(val);
                             log.log("Added " + val + " to the tree", 1);
-                        }
+//                        }
                     }
                     else{
                         log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
@@ -102,7 +102,7 @@ public class App extends JFrame {
 
                 Main.printTree(bst);
             }
-            case "insertRand" -> {
+            case "insertrand" -> {
                 if(scan.hasNextInt()){
                     int lo = scan.nextInt();
                     if(scan.hasNextInt()){
@@ -146,9 +146,6 @@ public class App extends JFrame {
 
                 Main.printTree(bst);
             }
-            case "Hi", "Hello", "hi", "hello" -> {
-                log.log("Hi there!");
-            }
             case "help" -> {
                 for(var line : new String[]{
                     "──── Commands ────",
@@ -160,6 +157,10 @@ public class App extends JFrame {
                     "    Example: \"delete 1 2 3 4\"",
                     "style <style: 1|2|3> : Sets the drawing style of the tree",
                     "    Example: \"style 1\"",
+                    "traverse <method: preOrder|postOrder|inOrder|reverseOrder|levelOrder> : Traverses the binary search tree using the provided method",
+                    "    Example: \"traverse preOrder\"",
+                    "query <attribute: numLeaves|numLevels|width|diameter|size|levelWidths|isFull|largest|smallest> : Gets the corresponding attribute of the bst",
+                    "    Example: \"traverse preOrder\"",
                     "clear : Deletes the entire tree",
                     "help : Displays this list of commands",
                 }) log.log(line, 1);
@@ -174,7 +175,7 @@ public class App extends JFrame {
             case "traverse" -> {
                 try {
                     StringBuilder sb = new StringBuilder("[ ");
-                    (switch (scan.next()){
+                    (switch (scan.next().toLowerCase()){
                         case "preorder" -> new Traversal.PreOrder<>(bst);
                         case "postorder" -> new Traversal.PostOrder<>(bst);
                         case "inorder" -> new Traversal.InOrder<>(bst);
@@ -186,14 +187,23 @@ public class App extends JFrame {
                     log.log(sb.toString(), 1);
                 }
                 catch (Exception e){
-                    log.log("Invalid parameter to traverse: Must be an one of \"preorder\", \"postorder\", or \"inorder\"", -1);
+                    log.log("Invalid parameter to traverse: Must be an one of preorder, postorder, inorder, reverseOrder, levelOrder", -1);
                 }
             }
             case "query" -> {
-                if(scan.hasNext()) switch(scan.next()) {
-
+                if(scan.hasNext()) switch(scan.next().toLowerCase()) {
+                    case "numleaves" -> log.log(bst.countLeaves() + "", 1);
+                    case "numlevels" -> log.log(bst.countLevels() + "", 1);
+                    case "width" -> log.log(bst.getWidth() + "", 1);
+                    case "diameter" -> log.log(bst.getDiameter() + "", 1);
+                    case "size" -> log.log(bst.size() + "", 1);
+                    case "isfull" -> log.log("Bst is" + (bst.isFullTree() ? " " : " not ") + "full", 1);
+                    case "largest" -> log.log(bst.getLargest() + "", 1);
+                    case "smallest" -> log.log(bst.getSmallest() + "", 1);
+                    case "levelwidths" -> log.log(Arrays.toString(bst.getLevelWidths()), 1);
+                    default -> log.log("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
                 }
-                else log.log("Invalid parameter to query: Must be one of numleaves, numlevels, width, diameter, size, levelwidths, isfull, getlargest, getsmallest");
+                else log.log("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
             }
             default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
         }

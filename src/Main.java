@@ -1,17 +1,17 @@
 public class Main {
     public static void main(String[] args){
-        new App();
+        new App(args.length > 0 && args[0].equals("--rb"));
     }
 
     @SuppressWarnings("rawtypes")
-    public static void printTree(BST bst){
+    public static <T extends Comparable<T>> void printTree(BST<T> bst){
         if(bst == null || bst.getRoot() == null){
             System.out.println("Empty Tree");
             return;
         }
 
-        final int height = bst.getHeight();
-        final BSTNode<Integer>[][] levels = new BSTNode[height][];
+        final int height = bst.countLevels();
+        final BSTNode<T>[][] levels = new BSTNode[height][];
         levels[0] = new BSTNode[]{bst.getRoot()};
         for(int h = 1; h < height; h++){
             int size = 1 << h;

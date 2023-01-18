@@ -156,4 +156,3 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
         }
     }
 }
-

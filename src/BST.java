@@ -50,16 +50,16 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     private boolean add(BSTNode<T> parent, T value) {
         int compare = value.compareTo(parent.value);
 
-        if (compare < 0) {
+        if (compare <= 0) {
             if (parent.hasLeft())
                 add(parent.getLeft(), value);
             else parent.setLeft(value);
-        } else if (compare > 0) {
+        } else {
             if (parent.hasRight())
                 add(parent.getRight(), value);
             else parent.setRight(value);
         }
-        else return false; // else: Node already in tree, do nothing :)
+        //else return false; // else: Node already in tree, do nothing :)
 
         return true;
     }
@@ -90,12 +90,17 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         BSTNode<T> target = find((T)value);
         if (target == null) return false;
 
-        if (target.hasLeft() && target.hasRight()) {  // Deg = 2, find inorder successor n and swap, then erase n
+        if (target.getDegree() == 2) {  // Find inorder successor n and swap, then erase n
             BSTNode<T> node = target.getRight();
             while (node.hasLeft()) node = node.getLeft();
 
             T temp = node.value;
-            remove(temp);
+            var n2 = node.hasLeft() ? node.getLeft() : node.hasRight() ? node.getRight() : null;
+            switch (node.getChildType()) {
+                case LEFT -> node.getParent().setLeft(n2);
+                case RIGHT -> node.getParent().setRight(n2);
+                case ROOT -> throw new Error("Oh, POOP! This should not happen!");
+            }
             target.value = temp;
         } else {  // Deg = 0 or 1, shunt up the child node (if exists) into the place that the node previously occupied
             var node = target.hasLeft() ? target.getLeft() : target.hasRight() ? target.getRight() : null;
@@ -161,14 +166,11 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public int size() {
-        // IntelliJ suggests that I replace (int) stream().count() with size().
-        // Wow, that would definitely work!
-        // Yeah, I wanna call size() in the size() method!
-        // No.
-        // Just no.
+        return countNodes(root);
+    }
 
-        //noinspection ReplaceInefficientStreamCount
-        return (int) stream().count();
+    private int countNodes(BSTNode<T> node){
+        return node == null ? 0 : 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
     }
 
     /**
@@ -202,8 +204,11 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     public Object[] toArray() {
-        // Remember my comment on size()?
-        // Yeah, that again.
+        // IntelliJ suggests that I replace stream().toArray() with this.toArray()
+        // Wow, that would definitely work!
+        // Yeah, I wanna call toArray() in the toArray() method!
+        // No.
+        // Just no.
 
         //noinspection SimplifyStreamApiCallChains
         return stream().toArray();
@@ -252,33 +257,15 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return The number of levels in the tree.
      */
     public int countLevels() {
-        return root.getHeight();
+        return getHeight() + 1;
     }
 
     public int getWidth() {
-        if (root == null) return 0;
-
-        int res = 0;
-
-        Queue<BSTNode<T>> nodes = new LinkedList<>(Collections.singleton(root));
-
-        while (nodes.size() != 0) {
-            int n = nodes.size();
-            res = Math.max(res, n);
-            while (n-- > 0) {
-                var current = nodes.remove();
-                if (current.getLeft() != null)
-                    nodes.add(current.getLeft());
-                if (current.getRight() != null)
-                    nodes.add(current.getRight());
-            }
-        }
-        return res;
+        return Arrays.stream(getLevelWidths()).reduce(0, Math::max);
     }
 
     public int getDiameter() {
-        if (root == null) return 0;
-        return 1 + (root.hasLeft() ? root.getLeft().getHeight() : 0) + (root.hasRight() ? root.getRight().getHeight() : 0);
+        return root == null ? 0 : 3 + (root.hasLeft() ? root.getLeft().getHeight() : 0) + (root.hasRight() ? root.getRight().getHeight() : 0);
     }
 
     public boolean isFullTree() {
@@ -302,7 +289,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     private T getSmallest(BSTNode<T> node) {
-        return node.hasLeft() ? getLargest(node.getLeft()) : node.value;
+        return node.hasLeft() ? getSmallest(node.getLeft()) : node.value;
     }
 
     public T[][] getLevels(){
@@ -317,13 +304,14 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         for(int h = 1; h < levels; h++){
             int size = 1 << h;
             nodes[h] = new BSTNode[size];
+            res[h] = (T[]) new Comparable[size];
             for(int i = 0; i * 2 < size; i++){
                 var n = nodes[h - 1][i];
                 if(n != null){
                     var l = nodes[h][i * 2] = n.getLeft();
                     var r = nodes[h][i * 2 + 1] = n.getRight();
                     if(l != null) res[h][i * 2] = l.value;
-                    if(r != null) res[h][i * 2] = r.value;
+                    if(r != null) res[h][i * 2 + 1] = r.value;
                 }
             }
         }
@@ -333,7 +321,6 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     public int[] getLevelWidths(){
         // Java FP is nice, but verbose
         // Whatever, I will use it because I am lazy
-        // Plus it is not too unreadable
         return Arrays.stream(getLevels()).mapToInt(i -> (int) Arrays.stream(i).filter(Objects::nonNull).count()).toArray();
     }
 }

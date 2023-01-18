@@ -22,7 +22,7 @@ public abstract class TreeDrawer {
     public final void drawTree(BST<Integer> bst, int windowWidth, Graphics2D graphics){
         if(bst == null || bst.getRoot() == null) return;
 
-        final int height = bst.getHeight();
+        final int height = bst.countLevels();
         final BSTNode<Integer>[][] levels = new BSTNode[height][];
         levels[0] = new BSTNode[]{bst.getRoot()};
 
