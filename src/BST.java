@@ -47,7 +47,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @param value  The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
-    private boolean add(BSTNode<T> parent, T value) {
+    protected boolean add(BSTNode<T> parent, T value) {
         int compare = value.compareTo(parent.value);
 
         if (compare <= 0) {
@@ -95,22 +95,21 @@ public class BST<T extends Comparable<T>> implements Set<T> {
             while (node.hasLeft()) node = node.getLeft();
 
             T temp = node.value;
-            var n2 = node.hasLeft() ? node.getLeft() : node.hasRight() ? node.getRight() : null;
-            switch (node.getChildType()) {
-                case LEFT -> node.getParent().setLeft(n2);
-                case RIGHT -> node.getParent().setRight(n2);
-                case ROOT -> throw new Error("Oh, POOP! This should not happen!");
-            }
+            deleteDegNotTwo(node);
             target.value = temp;
         } else {  // Deg = 0 or 1, shunt up the child node (if exists) into the place that the node previously occupied
-            var node = target.hasLeft() ? target.getLeft() : target.hasRight() ? target.getRight() : null;
-            switch (target.getChildType()) {
-                case LEFT -> target.getParent().setLeft(node);
-                case RIGHT -> target.getParent().setRight(node);
-                case ROOT -> root = target.getLeft().makeRoot();
-            }
+            deleteDegNotTwo(target);
         }
         return true;
+    }
+
+    protected void deleteDegNotTwo(BSTNode<T> target){
+        var node = target.hasLeft() ? target.getLeft() : target.hasRight() ? target.getRight() : null;
+        switch (target.getChildType()) {
+            case LEFT -> target.getParent().setLeft(node);
+            case RIGHT -> target.getParent().setRight(node);
+            case ROOT -> root = target.getLeft().makeRoot();
+        }
     }
 
     /**
@@ -143,7 +142,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @param value the value to search for
      * @return the {@link BSTNode} with that value, or null if the value is not in the tree
      */
-    private BSTNode<T> find(T value) {
+    protected BSTNode<T> find(T value) {
         return find(root, value);
     }
 
@@ -152,7 +151,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @param value The value to search for
      * @return the {@link BSTNode} with that value, or null if the value is not in the tree
      */
-    private BSTNode<T> find(BSTNode<T> node, T value) {
+    protected BSTNode<T> find(BSTNode<T> node, T value) {
         if (node == null) return null;
 
         int compare = value.compareTo(node.value);
@@ -169,7 +168,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return countNodes(root);
     }
 
-    private int countNodes(BSTNode<T> node){
+    protected int countNodes(BSTNode<T> node){
         return node == null ? 0 : 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
     }
 
@@ -183,8 +182,8 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     @Override
     public Iterator<T> iterator() {
         return root == null ? Collections.emptyIterator() : new Iterator<>() {
-            private final Stack<BSTNode<T>> nodes = new Stack<>();
-            private BSTNode<T> curr = root;
+            protected final Stack<BSTNode<T>> nodes = new Stack<>();
+            protected BSTNode<T> curr = root;
 
             @Override
             public boolean hasNext() {
@@ -249,7 +248,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @param node the root of the tree to search
      * @return the number of leaves in the tree
      */
-    private int countLeaves(BSTNode<T> node) {
+    protected int countLeaves(BSTNode<T> node) {
         return node == null ? 0 : node.isLeaf() ? 1 : countLeaves(node.getLeft()) + countLeaves(node.getRight());
     }
 
@@ -272,7 +271,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return root == null || isFull(root);
     }
 
-    private boolean isFull(BSTNode<T> node){
+    protected boolean isFull(BSTNode<T> node){
         return node.getDegree() == 0 || node.getDegree() == 2 && isFull(node.getLeft()) && isFull(node.getRight());
     }
 
@@ -280,7 +279,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return root == null ? null : getLargest(root);
     }
 
-    private T getLargest(BSTNode<T> node) {
+    protected T getLargest(BSTNode<T> node) {
         return node.hasRight() ? getLargest(node.getRight()) : node.value;
     }
 
@@ -288,7 +287,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         return root == null ? null : getSmallest(root);
     }
 
-    private T getSmallest(BSTNode<T> node) {
+    protected T getSmallest(BSTNode<T> node) {
         return node.hasLeft() ? getSmallest(node.getLeft()) : node.value;
     }
 

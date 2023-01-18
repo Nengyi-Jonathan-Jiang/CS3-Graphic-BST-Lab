@@ -1,6 +1,7 @@
 public class Main {
     public static void main(String[] args){
-        new App(args.length > 0 && args[0].equals("--rb"));
+        //new App(args.length > 0 && args[0].equals("--rb"));
+        new App(true);
     }
 
     @SuppressWarnings("rawtypes")

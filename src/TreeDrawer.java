@@ -60,7 +60,7 @@ public abstract class TreeDrawer {
 
                     var fm = graphics.getFontMetrics();
 
-                    graphics.setColor(Color.BLACK);
+                    graphics.setColor(node instanceof RBTNode ? Color.BLUE : Color.BLACK);
                     if(node.getParent() != null){
                         graphics.drawLine(X, Y, x[h - 1][i / 2], y[h - 1][i / 2]);
                     }
@@ -68,7 +68,7 @@ public abstract class TreeDrawer {
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 
-                    graphics.setColor(Color.BLACK);
+                    graphics.setColor(node instanceof RBTNode && RBTNode.getColor((RBTNode<Integer>) node) == RBTNode.Color.RED ? Color.RED : Color.BLACK);
                     graphics.drawString(text, X - d.width / 2, Y - fm.getHeight() / 2 + fm.getAscent());
                     graphics.drawRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
                 }

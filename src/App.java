@@ -5,12 +5,13 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class App extends JFrame {
     private static final long LOG_FADE_TIME = 16000;
     private static final long BLINKER_TIME = 800;
 
-    private final BST<Integer> bst = new BST<>();
+    private final BST<Integer> bst;
     private String input = "";
     private final Log log = new Log(LOG_FADE_TIME, 30);
 
@@ -27,6 +28,8 @@ public class App extends JFrame {
     private int currStyle = 0;
 
     public App(boolean isRedBlackTree){
+        bst = isRedBlackTree ? new RBT<>() : new BST<>();
+
         setTitle("Graphics BST Lab");
         setMinimumSize(new Dimension(50, 50));
         setSize(new Dimension(1000, 800));
@@ -121,6 +124,22 @@ public class App extends JFrame {
                 }
                 else{
                     log.log("Bad input: insertRand should be called with 2-3 int args", -1);
+                }
+            }
+            case "rotate" -> {
+                if(bst instanceof RBT<Integer>){
+                    var n = ((RBT<Integer>)bst).find(scan.nextInt());
+                    System.out.println(n);
+                    (switch (scan.next()) {
+                        case "LL" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LL_Rotation;
+                        case "LR" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LR_Rotation;
+                        case "RR" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::RR_Rotation;
+                        case "RL" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::RL_Rotation;
+                        default -> (Consumer<RBTNode<Integer>>)(i -> {
+                            log.log("Unknown rotation", -1);
+                        });
+                    }).accept(n);
+
                 }
             }
             case "clear" -> {
