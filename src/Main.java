@@ -44,8 +44,8 @@ public class Main {
         //if(largs.contains("--color"))
             useColor = true;
         new App(
-//                true
-                largs.contains("--rb")
+                true
+//                largs.contains("--rb")
         );
         new App(true);
     }

@@ -135,7 +135,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         int compare = value.compareTo(parent.value);
 
-        if (compare <= 0) {
+        if (compare < 0) {
             if (parent.hasLeft())
                 add(parent.getLeft(), value);
             else {

@@ -50,7 +50,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     protected boolean add(BSTNode<T> parent, T value) {
         int compare = value.compareTo(parent.value);
 
-        if (compare <= 0) {
+        if (compare < 0) {
             if (parent.hasLeft())
                 add(parent.getLeft(), value);
             else parent.setLeft(value);
