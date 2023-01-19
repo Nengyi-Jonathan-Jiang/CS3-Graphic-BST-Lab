@@ -60,12 +60,16 @@ public class BSTNode<T extends Comparable<T>> {
         node.parent = this;
     }
 
-    public void setLeft(T value) {
-        setLeft(new BSTNode<>(value));
+    public BSTNode<T> setLeft(T value) {
+        var res = new BSTNode<>(value);
+        setLeft(res);
+        return res;
     }
 
-    public void setRight(T value) {
-        setRight(new BSTNode<>(value));
+    public BSTNode<T> setRight(T value) {
+        var res = new BSTNode<>(value);
+        setRight(res);
+        return res;
     }
 
     public boolean hasLeft() {

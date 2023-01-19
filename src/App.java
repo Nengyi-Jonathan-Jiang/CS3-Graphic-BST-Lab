@@ -129,7 +129,6 @@ public class App extends JFrame {
             case "rotate" -> {
                 if(bst instanceof RBT<Integer>){
                     var n = ((RBT<Integer>)bst).find(scan.nextInt());
-                    System.out.println(n);
                     (switch (scan.next()) {
                         case "LL" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LL_Rotation;
                         case "LR" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LR_Rotation;
@@ -139,7 +138,7 @@ public class App extends JFrame {
                             log.log("Unknown rotation", -1);
                         });
                     }).accept(n);
-
+                    Main.printTree(bst);
                 }
             }
             case "clear" -> {

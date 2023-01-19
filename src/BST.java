@@ -95,15 +95,15 @@ public class BST<T extends Comparable<T>> implements Set<T> {
             while (node.hasLeft()) node = node.getLeft();
 
             T temp = node.value;
-            deleteDegNotTwo(node);
+            deleteSimple(node);
             target.value = temp;
         } else {  // Deg = 0 or 1, shunt up the child node (if exists) into the place that the node previously occupied
-            deleteDegNotTwo(target);
+            deleteSimple(target);
         }
         return true;
     }
 
-    protected void deleteDegNotTwo(BSTNode<T> target){
+    protected void deleteSimple(BSTNode<T> target){
         var node = target.hasLeft() ? target.getLeft() : target.hasRight() ? target.getRight() : null;
         switch (target.getChildType()) {
             case LEFT -> target.getParent().setLeft(node);
@@ -227,7 +227,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return The height of the tree. This is the number of edges from the root to the deepest leaf
      */
     public int getHeight() {
-        return root.getHeight();
+        return root == null ? 0 : root.getHeight();
     }
 
     /**

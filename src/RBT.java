@@ -3,8 +3,9 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
     public boolean add(T value) {
         if (root == null) {
             root = new RBTNode<>(value);
+            RBTNode.swapColor((RBTNode<T>) root);
             return true;
-        } else return super.add(root, value);
+        } else return add(root, value);
     }
 
     public void LL_Rotation(RBTNode<T> p){
@@ -15,10 +16,19 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         var u = g.getRight();
 
+        var gp = g.getParent();
+        var gt = g.getChildType();
+
         _LL_Rotation(x, s, p, u, g);
 
-        RBTNode.swapColor(p);
-        RBTNode.swapColor(g);
+        RBTNode.makeBlack(p);
+        RBTNode.makeRed(g);
+
+        switch (gt){
+            case LEFT -> gp.setLeft(p);
+            case RIGHT -> gp.setRight(p);
+            case ROOT -> root = p.makeRoot();
+        }
     }
     private void _LL_Rotation(RBTNode<T> x, RBTNode<T> s, RBTNode<T> p, RBTNode<T> u, RBTNode<T> g){
         g.setLeft(s);
@@ -33,10 +43,19 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         var u = g.getLeft();
 
+        var gp = g.getParent();
+        var gt = g.getChildType();
+
         _RR_Rotation(x, s, p, u, g);
 
-        RBTNode.swapColor(p);
-        RBTNode.swapColor(g);
+        RBTNode.makeBlack(p);
+        RBTNode.makeRed(g);
+
+        switch (gt){
+            case LEFT -> gp.setLeft(p);
+            case RIGHT -> gp.setRight(p);
+            case ROOT -> root = p.makeRoot();
+        }
     }
 
     private void _RR_Rotation(RBTNode<T> x, RBTNode<T> s, RBTNode<T> p, RBTNode<T> u, RBTNode<T> g){
@@ -50,13 +69,24 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var g = p.getParent();
         var u = g.getRight();
 
+        var gp = g.getParent();
+        var gt = g.getChildType();
+
         _RR_Rotation(x.getRight(), x.getLeft(), x, s, p);
         g.setLeft(x);
 
-        RBTNode.swapColor(x);
-        RBTNode.swapColor(g);
+        Main.printTree(this);
 
-        _LL_Rotation(s, p, x.getRight(), g, u);
+        _LL_Rotation(p, x.getRight(), x, u, g);
+
+        RBTNode.makeBlack(x);
+        RBTNode.makeRed(g);
+
+        switch (gt){
+            case LEFT -> gp.setLeft(x);
+            case RIGHT -> gp.setRight(x);
+            case ROOT -> root = x.makeRoot();
+        }
     }
     public void RL_Rotation(RBTNode<T> p){
         var x = p.getLeft();
@@ -65,13 +95,82 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var g = p.getParent();
         var u = g.getLeft();
 
+        var gp = g.getParent();
+        var gt = g.getChildType();
+
         _LL_Rotation(x.getLeft(), x.getRight(), x, s, p);
         g.setRight(x);
 
-        RBTNode.swapColor(x);
-        RBTNode.swapColor(g);
+        Main.printTree(this);
 
-        _RR_Rotation(s, p, x.getLeft(), g, u);
+        _RR_Rotation(p, x.getLeft(), x, u, g);
+
+        RBTNode.makeBlack(x);
+        RBTNode.makeRed(g);
+
+        switch (gt){
+            case LEFT -> gp.setLeft(x);
+            case RIGHT -> gp.setRight(x);
+            case ROOT -> root = x.makeRoot();
+        }
+    }
+
+    @Override
+    protected boolean add(BSTNode<T> _parent, T value) {
+        var parent = (RBTNode<T>) _parent;
+
+        // Color swap if necessary
+        if(RBTNode.isRed(parent.getLeft()) && RBTNode.isRed(parent.getRight())){
+            if(parent == root){
+                RBTNode.swapColor(parent.getLeft());
+                RBTNode.swapColor(parent.getRight());
+            }
+            else {
+                RBTNode.swapColor(parent);
+                RBTNode.swapColor(parent.getLeft());
+                RBTNode.swapColor(parent.getRight());
+                fix(parent);
+            }
+        }
+
+        int compare = value.compareTo(parent.value);
+
+        if (compare <= 0) {
+            if (parent.hasLeft())
+                add(parent.getLeft(), value);
+            else {
+                fix(parent.setLeft(value));
+            }
+        } else {
+            if (parent.hasRight())
+                add(parent.getRight(), value);
+            else {
+                fix(parent.setRight(value));
+            }
+        }
+        //else return false; // else: Node already in tree, do nothing :)
+
+        return true;
+    }
+
+    protected void fix(RBTNode<T> x){
+        // Check for Red violation
+        var p = x.getParent();
+        if(RBTNode.isRed(p)){   // Do the corresponding rotation
+            if(p.getChildType() == BSTNode.ChildType.LEFT){
+                if(x.getChildType() == BSTNode.ChildType.LEFT)
+                    LL_Rotation(p);
+                else LR_Rotation(p);
+            }
+            else {
+                if(x.getChildType() == BSTNode.ChildType.LEFT)
+                    RL_Rotation(p);
+                else RR_Rotation(p);
+            }
+        }
+
+        // Make root black
+        RBTNode.makeBlack((RBTNode<?>) root);
     }
 
     public RBTNode<T> find(T value){
@@ -79,17 +178,38 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
     }
 
     @Override
-    protected void deleteDegNotTwo(BSTNode<T> _target) {
+    protected void deleteSimple(BSTNode<T> _target) {
         var target = (RBTNode<T>) _target;
-        if(target.getDegree() == 1){
-            var node = target.hasLeft() ? target.getLeft() : target.getRight();
-            if(RBTNode.getColor(node) == RBTNode.Color.RED) {
-                super.deleteDegNotTwo(target);
-                RBTNode.swapColor(node);
-            }
+        var node = target.hasLeft() ? target.getLeft() : target.getRight();
+
+        if(RBTNode.isRed(target) || RBTNode.isRed(node)) {
+            super.deleteSimple(target);
+            RBTNode.makeBlack(node);
         }
-        else {
-            // bro idk man
+        else { // Double black
+            var sib = target.getChildType() == BSTNode.ChildType.LEFT ? target.getParent().getRight() : target.getParent().getLeft();
+
+            super.deleteSimple(target);
+
+            if(RBTNode.isRed(sib.getLeft()) || RBTNode.isRed(sib.getRight())) {
+                Main.printTree(this);
+
+                if (sib.getChildType() == BSTNode.ChildType.LEFT) {
+                    LL_Rotation(sib);
+                } else {
+                    RR_Rotation(sib);
+                }
+
+                Main.printTree(this);
+
+                RBTNode.makeBlack(sib.getLeft());
+                RBTNode.makeBlack(sib.getRight());
+
+                //RBTNode.makeRed(node);
+            }
+            else {
+
+            }
         }
     }
 }
@@ -106,13 +226,28 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
         return color;
     }
 
-    public static <T extends Comparable<T>> Color getColor(RBTNode<T> node) {
+    public static Color getColor(RBTNode<?> node) {
         return node == null ? Color.BLACK : node.getColor();
     }
 
+    public static boolean isRed(RBTNode<?> node) {
+        return getColor(node) == Color.RED;
+    }
 
-    public static <T extends Comparable<T>> void swapColor(RBTNode<T> node) {
+    public static boolean isBlack(RBTNode<?> node){
+        return getColor(node) == Color.BLACK;
+    }
+
+    public static void swapColor(RBTNode<?> node) {
         if(node != null) node.swapColor();
+    }
+
+    public static void makeRed(RBTNode<?> node){
+        if(node != null) node.color = Color.RED;
+    }
+
+    public static void makeBlack(RBTNode<?> node){
+        if(node != null) node.color = Color.BLACK;
     }
 
     private void swapColor() {
@@ -138,12 +273,16 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
     }
 
     @Override
-    public void setLeft(T value) {
-        setLeft(new RBTNode<>(value));
+    public RBTNode<T> setLeft(T value) {
+        RBTNode<T> res = new RBTNode<>(value);
+        setLeft(res);
+        return res;
     }
 
     @Override
-    public void setRight(T value) {
-        setRight(new RBTNode<>(value));
+    public RBTNode<T> setRight(T value) {
+        RBTNode<T> res = new RBTNode<>(value);
+        setRight(res);
+        return res;
     }
 }
