@@ -177,6 +177,51 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         return (RBTNode<T>) super.find(value);
     }
 
+    private void restructure(RBTNode<T> sib){
+        if(RBTNode.isRed(sib.getLeft()) || RBTNode.isRed(sib.getRight())) {
+            Main.printTree(this);
+
+            RBTNode<T> p2;
+
+            if (sib.getChildType() == BSTNode.ChildType.RIGHT) {
+                if(RBTNode.isRed(sib.getRight())) {
+                    RR_Rotation(sib);
+                    p2 = sib;
+                }
+                else {
+                    RL_Rotation(sib);
+                    p2 = sib.getParent();
+                }
+            } else {
+                if(RBTNode.isRed(sib.getLeft())) {
+                    LL_Rotation(sib);
+                    p2 = sib;
+                }
+                else {
+                    LR_Rotation(sib);
+                    p2 = sib.getParent();
+                }
+            }
+
+            Main.printTree(this);
+
+            System.out.println(p2);
+
+            RBTNode.makeBlack(p2.getLeft());
+            RBTNode.makeBlack(p2.getRight());
+        }
+        else {
+            Main.printTree(this);
+
+            RBTNode.makeRed(sib);
+            if(sib.getParent().getChildType() != BSTNode.ChildType.ROOT) {
+                var p = sib.getParent();
+                var sib2 = p.getChildType() == BSTNode.ChildType.LEFT ? p.getParent().getRight() : p.getParent().getLeft();
+                restructure(sib2);
+            }
+        }
+    }
+
     @Override
     protected void deleteSimple(BSTNode<T> _target) {
         var target = (RBTNode<T>) _target;
@@ -188,28 +233,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         }
         else { // Double black
             var sib = target.getChildType() == BSTNode.ChildType.LEFT ? target.getParent().getRight() : target.getParent().getLeft();
-
             super.deleteSimple(target);
-
-            if(RBTNode.isRed(sib.getLeft()) || RBTNode.isRed(sib.getRight())) {
-                Main.printTree(this);
-
-                if (sib.getChildType() == BSTNode.ChildType.LEFT) {
-                    LL_Rotation(sib);
-                } else {
-                    RR_Rotation(sib);
-                }
-
-                Main.printTree(this);
-
-                RBTNode.makeBlack(sib.getLeft());
-                RBTNode.makeBlack(sib.getRight());
-
-                //RBTNode.makeRed(node);
-            }
-            else {
-
-            }
+            restructure(sib);
         }
     }
 }
