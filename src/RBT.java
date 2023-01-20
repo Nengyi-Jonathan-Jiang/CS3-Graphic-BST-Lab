@@ -19,6 +19,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var gp = g.getParent();
         var gt = g.getChildType();
 
+        Main.printTree(this);
+
         _LL_Rotation(x, s, p, u, g);
 
         RBTNode.makeBlack(p);
@@ -44,6 +46,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         var gp = g.getParent();
         var gt = g.getChildType();
+
+        Main.printTree(this);
 
         _RR_Rotation(x, s, p, u, g);
 
@@ -71,6 +75,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var gp = g.getParent();
         var gt = g.getChildType();
 
+        Main.printTree(this);
+
         _RR_Rotation(x.getRight(), x.getLeft(), x, s, p);
         g.setLeft(x);
 
@@ -96,6 +102,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         var gp = g.getParent();
         var gt = g.getChildType();
+
+        Main.printTree(this);
 
         _LL_Rotation(x.getLeft(), x.getRight(), x, s, p);
         g.setRight(x);
