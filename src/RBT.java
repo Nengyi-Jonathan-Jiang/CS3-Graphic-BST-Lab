@@ -34,7 +34,6 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         g.setLeft(s);
         p.setRight(g);
     }
-
     public void RR_Rotation(RBTNode<T> p){ // Precondition: X is left child, P is left child
         var x = p.getRight();
         var s = p.getLeft();
@@ -204,8 +203,6 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
             }
 
             Main.printTree(this);
-
-            System.out.println(p2);
 
             RBTNode.makeBlack(p2.getLeft());
             RBTNode.makeBlack(p2.getRight());

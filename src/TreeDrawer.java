@@ -61,7 +61,7 @@ public abstract class TreeDrawer {
                     var fm = graphics.getFontMetrics();
 
                     graphics.setColor(node instanceof RBTNode ? Color.BLUE : Color.BLACK);
-                    if(node.getParent() != null){
+                    if(node.getParent() != null && h > 0){
                         graphics.drawLine(X, Y, x[h - 1][i / 2], y[h - 1][i / 2]);
                     }
 

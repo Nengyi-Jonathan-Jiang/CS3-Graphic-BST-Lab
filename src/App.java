@@ -62,9 +62,9 @@ public class App extends JFrame {
 
         new Timer(10, e -> repaint()).start();
 
-        evaluateCommand(new Scanner("insert 3 1 0 2 6 4 5 9 11"));
+        evaluateCommand(new Scanner("insert 68 63 93 7 67 15 30 97 42 20 91 61 82 41 60 66 13 54 32"));
         // First thing to do is help
-        evaluateCommand(new Scanner("help"));
+//        evaluateCommand(new Scanner("help"));
 
         // Also, STDIN loop
         Scanner scan = new Scanner(System.in);
@@ -91,19 +91,15 @@ public class App extends JFrame {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
-//                        if(bst.contains(val))
-//                            log.log(val + " is already in the tree", 1);
-//                        else {
-                            bst.add(val);
-                            log.log("Added " + val + " to the tree", 1);
-//                        }
+                        log.log("Adding " + val + " to the tree", 1);
+                        bst.add(val);
+                        Main.printTree(bst);
+                        log.log("Added " + val + " to the tree", 1);
                     }
                     else{
                         log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
                     }
                 }
-
-                Main.printTree(bst);
             }
             case "insertrand" -> {
                 if(scan.hasNextInt()){
@@ -126,21 +122,6 @@ public class App extends JFrame {
                     log.log("Bad input: insertRand should be called with 2-3 int args", -1);
                 }
             }
-            case "rotate" -> {
-                if(bst instanceof RBT<Integer>){
-                    var n = ((RBT<Integer>)bst).find(scan.nextInt());
-                    (switch (scan.next()) {
-                        case "LL" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LL_Rotation;
-                        case "LR" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::LR_Rotation;
-                        case "RR" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::RR_Rotation;
-                        case "RL" -> (Consumer<RBTNode<Integer>>)((RBT<Integer>)bst)::RL_Rotation;
-                        default -> (Consumer<RBTNode<Integer>>)(i -> {
-                            log.log("Unknown rotation", -1);
-                        });
-                    }).accept(n);
-                    Main.printTree(bst);
-                }
-            }
             case "clear" -> {
                 bst.root = null;
                 log.log("Cleared tree", 1);
@@ -153,7 +134,9 @@ public class App extends JFrame {
                             log.log(val + " is not in the tree", 1);
                         }
                         else {
+                            log.log("Deleting " + val + " from the tree", 1);
                             bst.remove(val);
+                            Main.printTree(bst);
                             log.log("Deleted " + val + " from the tree", 1);
                         }
                     }
@@ -161,8 +144,6 @@ public class App extends JFrame {
                         log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
                     }
                 }
-
-                Main.printTree(bst);
             }
             case "help" -> {
                 for(var line : new String[]{
