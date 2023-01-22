@@ -2,18 +2,22 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Stack;
 
 public abstract class TreeDrawer {
 
     public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+    private static final Graphics dummyGraphics = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getGraphics();
+
     public static int getNodePadding(){
         return font.getSize() / 2;
     }
 
     protected static Dimension getRenderedSize(String text) {
-        Rectangle2D size = font.getStringBounds(text, new FontRenderContext(new AffineTransform(), true, true));
+        Rectangle2D size = dummyGraphics.getFontMetrics(font).getStringBounds(text, dummyGraphics);
         return new Dimension((int) size.getWidth(), (int) size.getHeight());
     }
 
@@ -173,12 +177,8 @@ class TreeDrawerStacked extends TreeDrawer {
                     int totalChildWidth = widths[h + 1][i * 2] + widths[h + 1][i * 2 + 1];
 
                     // Calculate paddings
-                    int l = 0, r = 0;
-                    if (p - w / 2 < 0) {  // node text extends beyond left edge
-                        l = w / 2 - p;
-                    } else if (p + w - w / 2 > totalChildWidth) {  // node text extends beyond right edge
-                        r = p + w - w / 2 - totalChildWidth;
-                    }
+                    int l = Math.max(0, w / 2 - p),
+                            r = Math.max(0, p + w - w / 2 - totalChildWidth);
 
                     lPad[h][i] = l; // left padding
                     rPad[h][i] = r; // right padding
@@ -237,7 +237,7 @@ class TreeDrawerStackedCentered extends TreeDrawer {
             rPad[h] = new int[levels[h].length];
 
             for (int i = 0; i < levels[h].length; i++) {
-                // Null nodes contribute zero width (obviously)
+                // Null nodes contribute zero width (obviously), so we skip
                 if (levels[h][i] != null) {
                     var node = levels[h][i];
                     var left = node.getLeftChild();
@@ -266,12 +266,8 @@ class TreeDrawerStackedCentered extends TreeDrawer {
                     int totalChildWidth = widths[h + 1][i * 2] + widths[h + 1][i * 2 + 1];
 
                     // Calculate paddings
-                    int l = 0, r = 0;
-                    if (p - w / 2 < 0) {  // node text extends beyond left edge
-                        l = w / 2 - p;
-                    } else if (p + w - w / 2 > totalChildWidth) {  // node text extends beyond right edge
-                        r = p + w - w / 2 - totalChildWidth;
-                    }
+                    int l = Math.max(0, w / 2 - p),
+                        r = Math.max(0, p + w - w / 2 - totalChildWidth);
 
                     lPad[h][i] = l; // left padding
                     rPad[h][i] = r; // right padding
@@ -280,32 +276,24 @@ class TreeDrawerStackedCentered extends TreeDrawer {
                 }
             }
         }
-        final int[][] x = new int[height][], y = new int[height][];
+        final int[][] x = new int[height][];
         for(int h = 0; h < height; h++){
             int left = 0;
             x[h] = new int[widths[h].length];
-            y[h] = new int[widths[h].length];
-            Arrays.fill(y[h], h * 30 + 50);
             for(int i = 0; i < widths[h].length; i++){
-                for(int hh = h, ii = i; hh > 0;){
-                    if(ii % 2 == 0) {
-                        left += lPad[--hh][ii /= 2];
-                    }
-                    else {
-                        break;
-                    }
+                for(int hh = h, ii = i; hh --> 0;){
+                    if(ii % 2 == 0)
+                        left += lPad[hh][ii >>= 1];
+                    else break;
                 }
 
                 x[h][i] = left + pos[h][i] + windowWidth / 2 - widths[0][0] / 2;
                 left += widths[h][i];
 
-                for(int hh = h, ii = i; hh > 0;){
-                    if(ii % 2 == 1) {
-                        left += rPad[--hh][ii /= 2];
-                    }
-                    else {
-                        break;
-                    }
+                for(int hh = h, ii = i; hh --> 0;){
+                    if(ii % 2 == 1)
+                        left += rPad[hh][ii >>= 1];
+                    else break;
                 }
             }
         }

@@ -91,13 +91,16 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         BSTNode<T> target = find((T)value);
         if (target == null) return false;
 
-        if (target.getDegree() == 2) {  // Find inorder successor n and swap, then erase n
+        // Delete root
+        if (target == root && target.isLeaf()) root = null;
+
+        else if (target.getDegree() == 2) {  // Find inorder successor n and swap, then erase n
             BSTNode<T> node = target.getRightChild();
             while (node.hasLeftChild()) node = node.getLeftChild();
 
             BSTNode.swapContents(target, node);
             deleteSimple(node);
-        } else {  // Deg = 0 or 1, shunt up the child node (if exists) into the place that the node previously occupied
+        } else {  // Deg = 0 or 1, put child node (if exists) into the place that the node previously occupied
             deleteSimple(target);
         }
         return true;

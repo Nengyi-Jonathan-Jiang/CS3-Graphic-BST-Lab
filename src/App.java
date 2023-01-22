@@ -64,11 +64,9 @@ public class App extends JFrame {
 
         new Timer(10, e -> repaint()).start();
 
-        evaluateCommand(new Scanner("insert 68 63 93 7 67 15 30 97 42 20 91 61 82 41 60 66 13 54 32"));
-        // First thing to do is help
-//        evaluateCommand(new Scanner("help"));
+        evaluateCommand("insert 1 3 5 7 9 11 10 8 6 4 2 0");
 
-        // Also, STDIN loop
+        // STDIN loop
         Scanner scan = new Scanner(System.in);
         while(scan.hasNextLine()){
             String line = scan.nextLine();
@@ -78,11 +76,13 @@ public class App extends JFrame {
     }
 
     private void evaluateCommand(){
-        Scanner scan = new Scanner(input);
         log.log(">>> " + input);
-        evaluateCommand(scan);
-        // Reset input
+        evaluateCommand(input);
         input = "";
+    }
+
+    private void evaluateCommand(String str){
+        evaluateCommand(new Scanner(str));
     }
 
     private void evaluateCommand(Scanner scan){
@@ -181,7 +181,7 @@ public class App extends JFrame {
                     "    Example: \"insertRand 0 99 10\"",
                     "delete <values:number...> : Deletes the values from the BST",
                     "    Example: \"delete 1 2 3 4\"",
-                    "style <style: 1|2|3> : Sets the drawing style of the tree",
+                    "style <style: 1|2|3|4> : Sets the drawing style of the tree",
                     "    Example: \"style 1\"",
                     "traverse <method: preOrder|postOrder|inOrder|reverseOrder|levelOrder> : Traverses the binary search tree using the provided method",
                     "    Example: \"traverse preOrder\"",

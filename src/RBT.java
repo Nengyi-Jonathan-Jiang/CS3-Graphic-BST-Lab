@@ -186,18 +186,8 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
     protected void fix(RBTNode<T> x){
         // Check for Red violation
         var p = x.getParent();
-        if(RBTNode.isRed(p)){   // Do the corresponding rotation
-            if(p.getChildType() == BSTNode.ChildType.LEFT){
-                if(x.getChildType() == BSTNode.ChildType.LEFT)
-                    LL_Rotation(p);
-                else LR_Rotation(p);
-            }
-            else {
-                if(x.getChildType() == BSTNode.ChildType.LEFT)
-                    RL_Rotation(p);
-                else RR_Rotation(p);
-            }
-        }
+        if(RBTNode.isRed(p))   // Do the corresponding rotation
+            rotate(x);
 
         // Make root black
         RBTNode.makeBlack((RBTNode<?>) root);
@@ -220,34 +210,26 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         if(RBTNode.isRed(sib)){ // Red sibling
             if(sib.getChildType() == BSTNode.ChildType.RIGHT){
                 RR_Rotation(sib);
-                fix(sib.getLeftChild());
+                fixDoubleBlack(parent.getRightChild());
             }
             else{
                 LL_Rotation(sib);
-                fix(sib.getRightChild());
+                fixDoubleBlack(parent.getLeftChild());
             }
         }
         // Black sibling, has red child
         else if(RBTNode.isRed(sib.getLeftChild()) || RBTNode.isRed(sib.getRightChild())) {
             Main.printTree(this);
 
-            RBTNode<T> p2;
+            RBTNode.Color origColor = RBTNode.getColor(sib.getParent());
+            RBTNode<T> p = rotate(RBTNode.isRed(sib.getLeftChild()) ? sib.getLeftChild() : sib.getRightChild());
 
-            if (sib.isRightChild())
-                if(RBTNode.isRed(sib.getRightChild()))
-                    p2 = RR_Rotation(sib);
-                else
-                    p2 = RL_Rotation(sib);
-            else    // sib.isLeftChild
-                if(RBTNode.isRed(sib.getLeftChild()))
-                    p2 = LL_Rotation(sib);
-                else
-                    p2 = LR_Rotation(sib);
+            RBTNode.setColor(p, origColor);
 
             Main.printTree(this);
 
-            RBTNode.makeBlack(p2.getLeftChild());
-            RBTNode.makeBlack(p2.getRightChild());
+            RBTNode.makeBlack(p.getLeftChild());
+            RBTNode.makeBlack(p.getRightChild());
         }
         else { // Black sibling, no red child
             Main.printTree(this);
@@ -311,6 +293,10 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 
     public static void makeBlack(RBTNode<?> node){
         if(node != null) node.color = Color.BLACK;
+    }
+
+    public static void setColor(RBTNode<?> node, Color color){
+        if(node != null) node.color = color;
     }
 
     private void swapColor() {

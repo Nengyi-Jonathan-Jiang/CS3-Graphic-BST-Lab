@@ -3,19 +3,12 @@ import java.util.Arrays;
 public class Main {
     static boolean useColor = false;
 
-    static class ANSI_CODES {
-        static ANSI_CODES
-            CLEAR = new ANSI_CODES(),
-            BLACK = new ANSI_CODES(30),
-            RED = new ANSI_CODES(31),
-            GREEN = new ANSI_CODES(32),
-            YELLOW = new ANSI_CODES(33),
-            BLUE = new ANSI_CODES(34),
-            PURPLE = new ANSI_CODES(35),
-            CYAN = new ANSI_CODES(36),
-            WHITE = new ANSI_CODES(37),
-            BOLD = new ANSI_CODES(1, 0),
-            UNDERLINE = new ANSI_CODES(4, 0);
+    static enum ANSI_CODES {
+        CLEAR,
+        BLACK(30), RED(31), GREEN(32),
+        YELLOW(33), BLUE(34), PURPLE(35),
+        CYAN(36), WHITE(37),
+        BOLD(1, 0), UNDERLINE(4, 0);
 
         private final int c, d;
         ANSI_CODES(){
@@ -33,10 +26,6 @@ public class Main {
         public String toString() {
             return useColor ? "\u001B[" + (c == 0 ? d : d + ";" + c) + "m" : "";
         }
-
-        public ANSI_CODES and(ANSI_CODES o){
-            return new ANSI_CODES(d == 0 ? o.d : d, c == 0 ? o.c : c);
-        }
     }
 
     public static void main(String[] args){
@@ -45,7 +34,7 @@ public class Main {
             useColor = true;
         new App(
                 true
-//                largs.contains("--rb")
+//                 && largs.contains("--rb")
         );
         new App(true);
     }
