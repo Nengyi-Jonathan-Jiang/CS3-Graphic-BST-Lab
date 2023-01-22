@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
 public class BST<T extends Comparable<T>> implements Set<T> {
@@ -39,7 +40,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return whether the collection was changed as a result of this operation
      */
     public boolean addAll(Collection<? extends T> values) {
-        return values.stream().map(this::add).toList().contains(true);
+        return values.stream().map(this::add).collect(Collectors.toList()).contains(true);
     }
 
     /**
@@ -48,16 +49,16 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return whether the tree changed as a result of this call
      */
     protected boolean add(BSTNode<T> parent, T value) {
-        int compare = value.compareTo(parent.value);
+        int compare = value.compareTo(parent.getValue());
 
         if (compare < 0) {
-            if (parent.hasLeft())
-                add(parent.getLeft(), value);
-            else parent.setLeft(value);
+            if (parent.hasLeftChild())
+                add(parent.getLeftChild(), value);
+            else parent.insertLeft(value);
         } else {
-            if (parent.hasRight())
-                add(parent.getRight(), value);
-            else parent.setRight(value);
+            if (parent.hasRightChild())
+                add(parent.getRightChild(), value);
+            else parent.insertRight(value);
         }
         //else return false; // else: Node already in tree, do nothing :)
 
@@ -91,10 +92,10 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         if (target == null) return false;
 
         if (target.getDegree() == 2) {  // Find inorder successor n and swap, then erase n
-            BSTNode<T> node = target.getRight();
-            while (node.hasLeft()) node = node.getLeft();
+            BSTNode<T> node = target.getRightChild();
+            while (node.hasLeftChild()) node = node.getLeftChild();
 
-            target.value = node.value;
+            BSTNode.swapContents(target, node);
             deleteSimple(node);
         } else {  // Deg = 0 or 1, shunt up the child node (if exists) into the place that the node previously occupied
             deleteSimple(target);
@@ -103,11 +104,11 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     protected void deleteSimple(BSTNode<T> target){
-        var node = target.hasLeft() ? target.getLeft() : target.hasRight() ? target.getRight() : null;
+        var node = target.hasLeftChild() ? target.getLeftChild() : target.hasRightChild() ? target.getRightChild() : null;
         switch (target.getChildType()) {
-            case LEFT -> target.getParent().setLeft(node);
-            case RIGHT -> target.getParent().setRight(node);
-            case ROOT -> root = target.getLeft().makeRoot();
+            case LEFT -> target.getParent().setLeftChild(node);
+            case RIGHT -> target.getParent().setRightChild(node);
+            case ROOT -> root = target.getLeftChild().makeRoot();
         }
     }
 
@@ -116,7 +117,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return whether the collection was changed as a result of this operation
      */
     public boolean removeAll(Collection<?> values) {
-        return values.stream().map(this::remove).toList().contains(true);
+        return values.stream().map(this::remove).collect(Collectors.toList()).contains(true);
     }
 
     @Override
@@ -127,7 +128,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         BST<T> temp = new BST<>();
         temp.addAll(this);
         for(var val : c) if(contains(val)) temp.add((T) val);
-        boolean res = !stream().toList().equals(temp.stream().toList()); // This operation should be O(N) I think
+        boolean res = !new ArrayList<>(this).equals(new ArrayList<>(temp)); // This operation should be O(N) I think
         root = temp.getRoot();  // Hehe just copy the temp tree to this tree
         return res;
     }
@@ -153,12 +154,12 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     protected BSTNode<T> find(BSTNode<T> node, T value) {
         if (node == null) return null;
 
-        int compare = value.compareTo(node.value);
+        int compare = value.compareTo(node.getValue());
 
         if (compare < 0)
-            return find(node.getLeft(), value);
+            return find(node.getLeftChild(), value);
         if (compare > 0)
-            return find(node.getRight(), value);
+            return find(node.getRightChild(), value);
         return node;
     }
 
@@ -168,7 +169,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     protected int countNodes(BSTNode<T> node){
-        return node == null ? 0 : 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
+        return node == null ? 0 : 1 + countNodes(node.getLeftChild()) + countNodes(node.getRightChild());
     }
 
     /**
@@ -188,15 +189,15 @@ public class BST<T extends Comparable<T>> implements Set<T> {
             public boolean hasNext() {
                 while (curr != null) {
                     nodes.push(curr);
-                    curr = curr.getLeft();
+                    curr = curr.getLeftChild();
                 }
                 return !nodes.isEmpty();
             }
 
             public T next() {
                 var res = nodes.pop();
-                curr = res.getRight();
-                return res.value;
+                curr = res.getRightChild();
+                return res.getValue();
             }
         };
     }
@@ -248,7 +249,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return the number of leaves in the tree
      */
     protected int countLeaves(BSTNode<T> node) {
-        return node == null ? 0 : node.isLeaf() ? 1 : countLeaves(node.getLeft()) + countLeaves(node.getRight());
+        return node == null ? 0 : node.isLeaf() ? 1 : countLeaves(node.getLeftChild()) + countLeaves(node.getRightChild());
     }
 
     /**
@@ -263,7 +264,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     public int getDiameter() {
-        return root == null ? 0 : 3 + (root.hasLeft() ? root.getLeft().getHeight() : 0) + (root.hasRight() ? root.getRight().getHeight() : 0);
+        return root == null ? 0 : 3 + (root.hasLeftChild() ? root.getLeftChild().getHeight() : 0) + (root.hasRightChild() ? root.getRightChild().getHeight() : 0);
     }
 
     public boolean isFullTree() {
@@ -271,7 +272,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     protected boolean isFull(BSTNode<T> node){
-        return node.getDegree() == 0 || node.getDegree() == 2 && isFull(node.getLeft()) && isFull(node.getRight());
+        return node.getDegree() == 0 || node.getDegree() == 2 && isFull(node.getLeftChild()) && isFull(node.getRightChild());
     }
 
     public T getLargest() {
@@ -279,7 +280,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     protected T getLargest(BSTNode<T> node) {
-        return node.hasRight() ? getLargest(node.getRight()) : node.value;
+        return node.hasRightChild() ? getLargest(node.getRightChild()) : node.getValue();
     }
 
     public T getSmallest() {
@@ -287,7 +288,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
     }
 
     protected T getSmallest(BSTNode<T> node) {
-        return node.hasLeft() ? getSmallest(node.getLeft()) : node.value;
+        return node.hasLeftChild() ? getSmallest(node.getLeftChild()) : node.getValue();
     }
 
     public T[][] getLevels(){
@@ -297,7 +298,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
         final T[][] res = (T[][]) new Comparable[levels][];
         final BSTNode<T>[][] nodes = new BSTNode[levels][];
         nodes[0] = new BSTNode[]{root};
-        res[0] = (T[]) new Comparable[]{root.value};
+        res[0] = (T[]) new Comparable[]{root.getValue()};
 
         for(int h = 1; h < levels; h++){
             int size = 1 << h;
@@ -306,10 +307,10 @@ public class BST<T extends Comparable<T>> implements Set<T> {
             for(int i = 0; i * 2 < size; i++){
                 var n = nodes[h - 1][i];
                 if(n != null){
-                    var l = nodes[h][i * 2] = n.getLeft();
-                    var r = nodes[h][i * 2 + 1] = n.getRight();
-                    if(l != null) res[h][i * 2] = l.value;
-                    if(r != null) res[h][i * 2 + 1] = r.value;
+                    var l = nodes[h][i * 2] = n.getLeftChild();
+                    var r = nodes[h][i * 2 + 1] = n.getRightChild();
+                    if(l != null) res[h][i * 2] = l.getValue();
+                    if(r != null) res[h][i * 2 + 1] = r.getValue();
                 }
             }
         }

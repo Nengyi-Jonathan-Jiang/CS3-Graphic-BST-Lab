@@ -11,11 +11,13 @@ public class App extends JFrame {
     private static final long LOG_FADE_TIME = 16000;
     private static final long BLINKER_TIME = 800;
 
-    private final BST<Integer> bst;
+    private final BST<NumberOrString> bst;
     private String input = "";
     private final Log log = new Log(LOG_FADE_TIME, 30);
 
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+
+    private static final String STRING_MATCHING_REGEX = "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'";
 
     BufferedImage frame = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
@@ -92,12 +94,29 @@ public class App extends JFrame {
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
                         log.log("Adding " + val + " to the tree", 1);
-                        bst.add(val);
+                        bst.add(new NumberOrString(val));
                         Main.printTree(bst);
                         log.log("Added " + val + " to the tree", 1);
                     }
-                    else{
-                        log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
+                    else if(scan.hasNextDouble()){
+                        double val = scan.nextDouble();
+                        log.log("Adding " + val + " to the tree", 1);
+                        bst.add(new NumberOrString(val));
+                        Main.printTree(bst);
+                        log.log("Added " + val + " to the tree", 1);
+                    }
+                    else {
+                        String str;
+                        if((str = scan.findInLine(STRING_MATCHING_REGEX)) != null){
+                            String val = NumberOrString.fromStringString(str).toString();
+                            log.log("Adding \"" + val + "\" to the tree", 1);
+                            bst.add(new NumberOrString(val));
+                            Main.printTree(bst);
+                            log.log("Added \"" + val + "\" to the tree", 1);
+                        }
+                        else {
+                            log.log("Bad input: \"" + scan.next() + "\" is not an int, double, or string.", -1);
+                        }
                     }
                 }
             }
@@ -128,20 +147,28 @@ public class App extends JFrame {
             }
             case "delete" -> {
                 while(scan.hasNext()){
+                    Object val;
                     if(scan.hasNextInt()){
-                        int val = scan.nextInt();
-                        if(!bst.contains(val)){
-                            log.log(val + " is not in the tree", 1);
-                        }
-                        else {
-                            log.log("Deleting " + val + " from the tree", 1);
-                            bst.remove(val);
-                            Main.printTree(bst);
-                            log.log("Deleted " + val + " from the tree", 1);
-                        }
+                        val = new NumberOrString(scan.nextInt());
                     }
+                    else if(scan.hasNextDouble()){
+                        val = new NumberOrString(scan.nextDouble());
+                    }
+                    else if(((NumberOrString)(val = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX)))).value != null);
                     else{
                         log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
+                        continue;
+                    }
+
+
+                    if(!bst.contains(val)){
+                        log.log(val + " is not in the tree", 1);
+                    }
+                    else {
+                        log.log("Deleting " + val + " from the tree", 1);
+                        bst.remove(val);
+                        Main.printTree(bst);
+                        log.log("Deleted " + val + " from the tree", 1);
                     }
                 }
             }

@@ -29,9 +29,9 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 
                 public T next() {
                     var res = nodes.pop();
-                    if (res.hasRight()) nodes.push(res.getRight());
-                    if (res.hasLeft()) nodes.push(res.getLeft());
-                    return res.value;
+                    if (res.hasRightChild()) nodes.push(res.getRightChild());
+                    if (res.hasLeftChild()) nodes.push(res.getLeftChild());
+                    return res.getValue();
                 }
             };
         }
@@ -51,10 +51,10 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
                 public boolean hasNext() {
                     while (curr != null) {
                         nodes.push(curr);
-                        if (curr.hasLeft())
-                            curr = curr.getLeft();
+                        if (curr.hasLeftChild())
+                            curr = curr.getLeftChild();
                         else
-                            curr = curr.getRight();
+                            curr = curr.getRightChild();
                     }
                     return !nodes.empty();
                 }
@@ -62,9 +62,9 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
                 public T next() {
                     var node = nodes.pop();
                     if (node.getChildType() == BSTNode.ChildType.LEFT) {
-                        curr = node.getParent().getRight();
+                        curr = node.getParent().getRightChild();
                     }
-                    return node.value;
+                    return node.getValue();
                 }
             };
         }
@@ -85,14 +85,14 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
                 public boolean hasNext() {
                     while (curr != null) {
                         nodes.push(curr);
-                        curr = curr.getLeft();
+                        curr = curr.getLeftChild();
                     }
                     return !nodes.isEmpty();
                 }
 
                 public T next() {
                     var res = nodes.pop();
-                    curr = res.getRight();
+                    curr = res.getRightChild();
                     return res.value;
                 }
             };
@@ -114,14 +114,14 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
                 public boolean hasNext() {
                     while (curr != null) {
                         nodes.push(curr);
-                        curr = curr.getRight();
+                        curr = curr.getRightChild();
                     }
                     return !nodes.isEmpty();
                 }
 
                 public T next() {
                     var res = nodes.pop();
-                    curr = res.getLeft();
+                    curr = res.getLeftChild();
                     return res.value;
                 }
             };
@@ -146,10 +146,10 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
                 @Override
                 public T next() {
                     var node = nodes.remove();
-                    if (node.hasLeft())
-                        nodes.add(node.getLeft());
-                    if (node.hasRight())
-                        nodes.add(node.getRight());
+                    if (node.hasLeftChild())
+                        nodes.add(node.getLeftChild());
+                    if (node.hasRightChild())
+                        nodes.add(node.getRightChild());
                     return node.value;
                 }
             };

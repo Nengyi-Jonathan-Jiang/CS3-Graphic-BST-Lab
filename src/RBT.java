@@ -8,13 +8,13 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         } else return add(root, value);
     }
 
-    public void LL_Rotation(RBTNode<T> p){
-        var x = p.getLeft();
-        var s = p.getRight();
+    public RBTNode<T> LL_Rotation(RBTNode<T> p){
+        var x = p.getLeftChild();
+        var s = p.getRightChild();
 
         var g = p.getParent();
 
-        var u = g.getRight();
+        var u = g.getRightChild();
 
         var gp = g.getParent();
         var gt = g.getChildType();
@@ -27,22 +27,24 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         RBTNode.makeRed(g);
 
         switch (gt){
-            case LEFT -> gp.setLeft(p);
-            case RIGHT -> gp.setRight(p);
+            case LEFT -> gp.setLeftChild(p);
+            case RIGHT -> gp.setRightChild(p);
             case ROOT -> root = p.makeRoot();
         }
+
+        return p;
     }
     private void _LL_Rotation(RBTNode<T> x, RBTNode<T> s, RBTNode<T> p, RBTNode<T> u, RBTNode<T> g){
-        g.setLeft(s);
-        p.setRight(g);
+        g.setLeftChild(s);
+        p.setRightChild(g);
     }
-    public void RR_Rotation(RBTNode<T> p){ // Precondition: X is left child, P is left child
-        var x = p.getRight();
-        var s = p.getLeft();
+    public RBTNode<T> RR_Rotation(RBTNode<T> p){ // Precondition: X is left child, P is left child
+        var x = p.getRightChild();
+        var s = p.getLeftChild();
 
         var g = p.getParent();
 
-        var u = g.getLeft();
+        var u = g.getLeftChild();
 
         var gp = g.getParent();
         var gt = g.getChildType();
@@ -55,71 +57,91 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         RBTNode.makeRed(g);
 
         switch (gt){
-            case LEFT -> gp.setLeft(p);
-            case RIGHT -> gp.setRight(p);
+            case LEFT -> gp.setLeftChild(p);
+            case RIGHT -> gp.setRightChild(p);
             case ROOT -> root = p.makeRoot();
         }
+
+        return p;
     }
 
     private void _RR_Rotation(RBTNode<T> x, RBTNode<T> s, RBTNode<T> p, RBTNode<T> u, RBTNode<T> g){
-        g.setRight(s);
-        p.setLeft(g);
+        g.setRightChild(s);
+        p.setLeftChild(g);
     }
-    public void LR_Rotation(RBTNode<T> p){
-        var x = p.getRight();
-        var s = p.getLeft();
+    public RBTNode<T> LR_Rotation(RBTNode<T> p){
+        var x = p.getRightChild();
+        var s = p.getLeftChild();
 
         var g = p.getParent();
-        var u = g.getRight();
+        var u = g.getRightChild();
 
         var gp = g.getParent();
         var gt = g.getChildType();
 
         Main.printTree(this);
 
-        _RR_Rotation(x.getRight(), x.getLeft(), x, s, p);
-        g.setLeft(x);
+        _RR_Rotation(x.getRightChild(), x.getLeftChild(), x, s, p);
+        g.setLeftChild(x);
 
         Main.printTree(this);
 
-        _LL_Rotation(p, x.getRight(), x, u, g);
+        _LL_Rotation(p, x.getRightChild(), x, u, g);
 
         RBTNode.makeBlack(x);
         RBTNode.makeRed(g);
 
         switch (gt){
-            case LEFT -> gp.setLeft(x);
-            case RIGHT -> gp.setRight(x);
+            case LEFT -> gp.setLeftChild(x);
+            case RIGHT -> gp.setRightChild(x);
             case ROOT -> root = x.makeRoot();
         }
+
+        return p.getParent();
     }
-    public void RL_Rotation(RBTNode<T> p){
-        var x = p.getLeft();
-        var s = p.getRight();
+    public RBTNode<T> RL_Rotation(RBTNode<T> p){
+        var x = p.getLeftChild();
+        var s = p.getRightChild();
 
         var g = p.getParent();
-        var u = g.getLeft();
+        var u = g.getLeftChild();
 
         var gp = g.getParent();
         var gt = g.getChildType();
 
         Main.printTree(this);
 
-        _LL_Rotation(x.getLeft(), x.getRight(), x, s, p);
-        g.setRight(x);
+        _LL_Rotation(x.getLeftChild(), x.getRightChild(), x, s, p);
+        g.setRightChild(x);
 
         Main.printTree(this);
 
-        _RR_Rotation(p, x.getLeft(), x, u, g);
+        _RR_Rotation(p, x.getLeftChild(), x, u, g);
 
         RBTNode.makeBlack(x);
         RBTNode.makeRed(g);
 
         switch (gt){
-            case LEFT -> gp.setLeft(x);
-            case RIGHT -> gp.setRight(x);
+            case LEFT -> gp.setLeftChild(x);
+            case RIGHT -> gp.setRightChild(x);
             case ROOT -> root = x.makeRoot();
         }
+
+        return p.getParent();
+    }
+
+    private RBTNode<T> rotate(RBTNode<T> x){
+        var p = x.getParent();
+        if(p.getChildType() == BSTNode.ChildType.LEFT)
+            if(x.getChildType() == BSTNode.ChildType.LEFT)
+                return LL_Rotation(p);
+            else
+                return LR_Rotation(p);
+        else
+            if(x.getChildType() == BSTNode.ChildType.LEFT)
+                return RL_Rotation(p);
+            else
+                return RR_Rotation(p);
     }
 
     @Override
@@ -127,39 +149,40 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var parent = (RBTNode<T>) _parent;
 
         // Color swap if necessary
-        if(RBTNode.isRed(parent.getLeft()) && RBTNode.isRed(parent.getRight())){
+        if(RBTNode.isRed(parent.getLeftChild()) && RBTNode.isRed(parent.getRightChild())){
             if(parent == root){
-                RBTNode.swapColor(parent.getLeft());
-                RBTNode.swapColor(parent.getRight());
+                RBTNode.swapColor(parent.getLeftChild());
+                RBTNode.swapColor(parent.getRightChild());
             }
             else {
                 RBTNode.swapColor(parent);
-                RBTNode.swapColor(parent.getLeft());
-                RBTNode.swapColor(parent.getRight());
+                RBTNode.swapColor(parent.getLeftChild());
+                RBTNode.swapColor(parent.getRightChild());
                 fix(parent);
             }
         }
 
         int compare = value.compareTo(parent.value);
 
-        if (compare < 0) {
-            if (parent.hasLeft())
-                add(parent.getLeft(), value);
-            else {
-                fix(parent.setLeft(value));
-            }
-        } else {
-            if (parent.hasRight())
-                add(parent.getRight(), value);
-            else {
-                fix(parent.setRight(value));
-            }
-        }
+        if (compare < 0)
+            if (parent.hasLeftChild())
+                return add(parent.getLeftChild(), value);
+            else
+                fix(parent.insertLeft(value));
+        else
+            if (parent.hasRightChild())
+                return add(parent.getRightChild(), value);
+            else
+                fix(parent.insertRight(value));
         //else return false; // else: Node already in tree, do nothing :)
 
         return true;
     }
 
+    /**
+     * Fixes red-red violation and root violation, which occur when inserting nodes
+     * @param x The node which may be violating the red rule
+     */
     protected void fix(RBTNode<T> x){
         // Check for Red violation
         var p = x.getParent();
@@ -184,62 +207,72 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         return (RBTNode<T>) super.find(value);
     }
 
-    private void restructure(RBTNode<T> sib){
-        if(RBTNode.isRed(sib.getLeft()) || RBTNode.isRed(sib.getRight())) {
+    /**
+     * @param sib The sibling of the double-black node (We use sibling because node itself may be null).
+     */
+    private void fixDoubleBlack(RBTNode<T> sib){
+        var parent = sib.getParent();
+
+        if(sib.getSibling() == null)
+            System.out.println("Fix double black null");
+        else System.out.println("Fix double black " + sib.getSibling().value);
+
+        if(RBTNode.isRed(sib)){ // Red sibling
+            if(sib.getChildType() == BSTNode.ChildType.RIGHT){
+                RR_Rotation(sib);
+                fix(sib.getLeftChild());
+            }
+            else{
+                LL_Rotation(sib);
+                fix(sib.getRightChild());
+            }
+        }
+        // Black sibling, has red child
+        else if(RBTNode.isRed(sib.getLeftChild()) || RBTNode.isRed(sib.getRightChild())) {
             Main.printTree(this);
 
             RBTNode<T> p2;
 
-            if (sib.getChildType() == BSTNode.ChildType.RIGHT) {
-                if(RBTNode.isRed(sib.getRight())) {
-                    RR_Rotation(sib);
-                    p2 = sib;
-                }
-                else {
-                    RL_Rotation(sib);
-                    p2 = sib.getParent();
-                }
-            } else {
-                if(RBTNode.isRed(sib.getLeft())) {
-                    LL_Rotation(sib);
-                    p2 = sib;
-                }
-                else {
-                    LR_Rotation(sib);
-                    p2 = sib.getParent();
-                }
-            }
+            if (sib.isRightChild())
+                if(RBTNode.isRed(sib.getRightChild()))
+                    p2 = RR_Rotation(sib);
+                else
+                    p2 = RL_Rotation(sib);
+            else    // sib.isLeftChild
+                if(RBTNode.isRed(sib.getLeftChild()))
+                    p2 = LL_Rotation(sib);
+                else
+                    p2 = LR_Rotation(sib);
 
             Main.printTree(this);
 
-            RBTNode.makeBlack(p2.getLeft());
-            RBTNode.makeBlack(p2.getRight());
+            RBTNode.makeBlack(p2.getLeftChild());
+            RBTNode.makeBlack(p2.getRightChild());
         }
-        else {
+        else { // Black sibling, no red child
             Main.printTree(this);
 
             RBTNode.makeRed(sib);
-            if(sib.getParent().getChildType() != BSTNode.ChildType.ROOT) {
-                var p = sib.getParent();
-                var sib2 = p.getChildType() == BSTNode.ChildType.LEFT ? p.getParent().getRight() : p.getParent().getLeft();
-                restructure(sib2);
+            if(parent.isNotRoot() && RBTNode.isBlack(parent)) {
+                fixDoubleBlack(sib.getParent().getSibling());
             }
+            else RBTNode.makeBlack(parent);
         }
     }
 
     @Override
     protected void deleteSimple(BSTNode<T> _target) {
         var target = (RBTNode<T>) _target;
-        var node = target.hasLeft() ? target.getLeft() : target.getRight();
+        var node = target.hasLeftChild() ? target.getLeftChild() : target.getRightChild();
 
         if(RBTNode.isRed(target) || RBTNode.isRed(node)) {
             super.deleteSimple(target);
             RBTNode.makeBlack(node);
         }
         else { // Double black
-            var sib = target.getChildType() == BSTNode.ChildType.LEFT ? target.getParent().getRight() : target.getParent().getLeft();
+            var sib = target.hasSibling() ? target.getSibling() : target.getParent().getSibling();
             super.deleteSimple(target);
-            restructure(sib);
+            fixDoubleBlack(sib);
         }
     }
 }
@@ -288,13 +321,13 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
     }
 
     @Override
-    public RBTNode<T> getLeft() {
-        return (RBTNode<T>) super.getLeft();
+    public RBTNode<T> getLeftChild() {
+        return (RBTNode<T>) super.getLeftChild();
     }
 
     @Override
-    public RBTNode<T> getRight() {
-        return (RBTNode<T>) super.getRight();
+    public RBTNode<T> getRightChild() {
+        return (RBTNode<T>) super.getRightChild();
     }
 
     @Override
@@ -303,16 +336,21 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
     }
 
     @Override
-    public RBTNode<T> setLeft(T value) {
+    public RBTNode<T> insertLeft(T value) {
         RBTNode<T> res = new RBTNode<>(value);
-        setLeft(res);
+        setLeftChild(res);
         return res;
     }
 
     @Override
-    public RBTNode<T> setRight(T value) {
+    public RBTNode<T> insertRight(T value) {
         RBTNode<T> res = new RBTNode<>(value);
-        setRight(res);
+        setRightChild(res);
         return res;
+    }
+
+    @Override
+    public RBTNode<T> getSibling() {
+        return (RBTNode<T>)super.getSibling();
     }
 }

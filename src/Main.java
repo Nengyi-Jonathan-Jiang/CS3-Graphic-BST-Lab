@@ -65,8 +65,8 @@ public class Main {
             for(int i = 0; i * 2 < size; i++){
                 var n = levels[h - 1][i];
                 if(n != null){
-                    levels[h][i * 2] = n.getLeft();
-                    levels[h][i * 2 + 1] = n.getRight();
+                    levels[h][i * 2] = n.getLeftChild();
+                    levels[h][i * 2 + 1] = n.getRightChild();
                 }
             }
         }
@@ -84,13 +84,13 @@ public class Main {
                     }
                 }
                 else{
-                    int w = levels[r][i].value.toString().length() + 3;
+                    int w = levels[r][i].getValue().toString().length() + 3;
                     int width = r == height - 1
                             ? w
                             : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
                     widths[r][i] = width;
 
-                    if(!levels[r][i].hasRight() && !levels[r][i].hasLeft()){
+                    if(!levels[r][i].hasRightChild() && !levels[r][i].hasLeftChild()){
                         for(int rr = r, ii = i; rr < height; rr++, ii *= 2) {
                             widths[rr][ii] = width;
                         }
@@ -119,7 +119,7 @@ public class Main {
                             : ANSI_CODES.PURPLE
                         );
                     System.out.print(ANSI_CODES.BOLD);
-                    printCentered(val.value, w - 3);
+                    printCentered(val.getValue(), w - 3);
                     System.out.print(ANSI_CODES.CLEAR + "] ");
                 }
             }
