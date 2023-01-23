@@ -8,7 +8,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         } else return add(root, value);
     }
 
-    public RBTNode<T> LL_Rotation(RBTNode<T> p){
+    private RBTNode<T> LL_Rotation(RBTNode<T> p){
         var x = p.getLeftChild();
         var s = p.getRightChild();
 
@@ -38,7 +38,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         g.setLeftChild(s);
         p.setRightChild(g);
     }
-    public RBTNode<T> RR_Rotation(RBTNode<T> p){ // Precondition: X is left child, P is left child
+    private RBTNode<T> RR_Rotation(RBTNode<T> p){ // Precondition: X is left child, P is left child
         var x = p.getRightChild();
         var s = p.getLeftChild();
 
@@ -69,7 +69,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         g.setRightChild(s);
         p.setLeftChild(g);
     }
-    public RBTNode<T> LR_Rotation(RBTNode<T> p){
+    private RBTNode<T> LR_Rotation(RBTNode<T> p){
         var x = p.getRightChild();
         var s = p.getLeftChild();
 
@@ -99,7 +99,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         return p.getParent();
     }
-    public RBTNode<T> RL_Rotation(RBTNode<T> p){
+    private RBTNode<T> RL_Rotation(RBTNode<T> p){
         var x = p.getLeftChild();
         var s = p.getRightChild();
 
@@ -109,6 +109,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         var gp = g.getParent();
         var gt = g.getChildType();
 
+        System.out.println("Performing Right-Left rotation");
         Main.printTree(this);
 
         _LL_Rotation(x.getLeftChild(), x.getRightChild(), x, s, p);
@@ -132,16 +133,20 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
     private RBTNode<T> rotate(RBTNode<T> x){
         var p = x.getParent();
-        if(p.getChildType() == BSTNode.ChildType.LEFT)
-            if(x.getChildType() == BSTNode.ChildType.LEFT)
-                return LL_Rotation(p);
-            else
-                return LR_Rotation(p);
+
+        if(p.isLeftChild() && x.isLeftChild())
+            return LL_Rotation(p);
         else
-            if(x.getChildType() == BSTNode.ChildType.LEFT)
-                return RL_Rotation(p);
-            else
-                return RR_Rotation(p);
+        if(p.isLeftChild() && x.isRightChild())
+            return LR_Rotation(p);
+        else
+        if(p.isRightChild() && x.isLeftChild())
+            return RL_Rotation(p);
+        else
+        if(p.isRightChild() && x.isRightChild())
+            return RR_Rotation(p);
+        else
+            throw new Error("This should never happen");
     }
 
     @Override

@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
 public class BST<T extends Comparable<T>> implements Set<T> {
@@ -40,7 +39,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return whether the collection was changed as a result of this operation
      */
     public boolean addAll(Collection<? extends T> values) {
-        return values.stream().map(this::add).collect(Collectors.toList()).contains(true);
+        return values.stream().map(this::add).toList().contains(true);
     }
 
     /**
@@ -120,7 +119,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
      * @return whether the collection was changed as a result of this operation
      */
     public boolean removeAll(Collection<?> values) {
-        return values.stream().map(this::remove).collect(Collectors.toList()).contains(true);
+        return values.stream().map(this::remove).toList().contains(true);
     }
 
     @Override

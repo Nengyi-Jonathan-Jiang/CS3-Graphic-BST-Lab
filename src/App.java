@@ -13,8 +13,6 @@ public class App extends JFrame {
 
     private final BST<NumberOrString> bst;
     private String input = "";
-    private final Log log = new Log(LOG_FADE_TIME, 30);
-
     private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
     private static final String STRING_MATCHING_REGEX = "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'";
@@ -70,13 +68,13 @@ public class App extends JFrame {
         Scanner scan = new Scanner(System.in);
         while(scan.hasNextLine()){
             String line = scan.nextLine();
-            log.log(">>> " + line);
+            Log.echoInput(">>> " + line);
             evaluateCommand(new Scanner(line));
         }
     }
 
     private void evaluateCommand(){
-        log.log(">>> " + input);
+        Log.echoInput(">>> " + input);
         evaluateCommand(input);
         input = "";
     }
@@ -93,29 +91,29 @@ public class App extends JFrame {
                 while(scan.hasNext()){
                     if(scan.hasNextInt()){
                         int val = scan.nextInt();
-                        log.log("Adding " + val + " to the tree", 1);
+                        Log.log("Adding " + val + " to the tree");
                         bst.add(new NumberOrString(val));
                         Main.printTree(bst);
-                        log.log("Added " + val + " to the tree", 1);
+                        Log.log("Added " + val + " to the tree");
                     }
                     else if(scan.hasNextDouble()){
                         double val = scan.nextDouble();
-                        log.log("Adding " + val + " to the tree", 1);
+                        Log.log("Adding " + val + " to the tree");
                         bst.add(new NumberOrString(val));
                         Main.printTree(bst);
-                        log.log("Added " + val + " to the tree", 1);
+                        Log.log("Added " + val + " to the tree");
                     }
                     else {
                         String str;
                         if((str = scan.findInLine(STRING_MATCHING_REGEX)) != null){
                             String val = NumberOrString.fromStringString(str).toString();
-                            log.log("Adding \"" + val + "\" to the tree", 1);
+                            Log.log("Adding \"" + val + "\" to the tree");
                             bst.add(new NumberOrString(val));
                             Main.printTree(bst);
-                            log.log("Added \"" + val + "\" to the tree", 1);
+                            Log.log("Added \"" + val + "\" to the tree");
                         }
                         else {
-                            log.log("Bad input: \"" + scan.next() + "\" is not an int, double, or string.", -1);
+                            Log.err("Bad input: \"" + scan.next() + "\" is not an int, double, or string.");
                         }
                     }
                 }
@@ -132,18 +130,14 @@ public class App extends JFrame {
                             c.append(" ").append((int)(Math.random() * (hi - lo + 1)) + lo);
                         }
                         evaluateCommand(new Scanner(c.toString()));
-                    }
-                    else{
-                        log.log("Bad input: insertRand should be called with 2-3 int args", -1);
+                        break;
                     }
                 }
-                else{
-                    log.log("Bad input: insertRand should be called with 2-3 int args", -1);
-                }
+                Log.err("Bad input: insertRand should be called with 2-3 int args");
             }
             case "clear" -> {
                 bst.root = null;
-                log.log("Cleared tree", 1);
+                Log.log("Cleared tree");
             }
             case "delete" -> {
                 while(scan.hasNext()){
@@ -156,19 +150,19 @@ public class App extends JFrame {
                     }
                     else if(((NumberOrString)(val = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX)))).value != null);
                     else{
-                        log.log("Bad input: \"" + scan.next() + "\" is not an int.", -1);
+                        Log.err("Bad input: \"" + scan.next() + "\" is not an int.");
                         continue;
                     }
 
 
                     if(!bst.contains(val)){
-                        log.log(val + " is not in the tree", 1);
+                        Log.warn(val + " is not in the tree");
                     }
                     else {
-                        log.log("Deleting " + val + " from the tree", 1);
+                        Log.log("Deleting " + val + " from the tree");
                         bst.remove(val);
                         Main.printTree(bst);
-                        log.log("Deleted " + val + " from the tree", 1);
+                        Log.log("Deleted " + val + " from the tree");
                     }
                 }
             }
@@ -189,12 +183,12 @@ public class App extends JFrame {
                     "    Example: \"traverse preOrder\"",
                     "clear : Deletes the entire tree",
                     "help : Displays this list of commands",
-                }) log.log(line, 1);
+                }) Log.output(line);
             }
             case "style" -> {
                 int style;
                 if(!scan.hasNextInt() || (style = scan.nextInt()) > styles.length || style <= 0)
-                    log.log("Invalid parameter to style: Must be an int in the range [1, " + styles.length + "]", -1);
+                    Log.err("Invalid parameter to style: Must be an int in the range [1, " + styles.length + "]");
                 else
                     currStyle = style - 1;
             }
@@ -210,24 +204,24 @@ public class App extends JFrame {
                         default -> throw new Exception();
                     }).forEach(i -> sb.append(i).append(" "));
                     sb.append("]");
-                    log.log(sb.toString(), 1);
+                    Log.output(sb.toString());
                 }
                 catch (Exception e){
-                    log.log("Invalid parameter to traverse: Must be an one of preorder, postorder, inorder, reverseOrder, levelOrder", -1);
+                    Log.err("Invalid parameter to traverse: Must be an one of preorder, postorder, inorder, reverseOrder, levelOrder");
                 }
             }
             case "query" -> {
                 if(scan.hasNext()) switch(scan.next().toLowerCase()) {
-                    case "numleaves" -> log.log(bst.countLeaves() + "", 1);
-                    case "numlevels" -> log.log(bst.countLevels() + "", 1);
-                    case "width" -> log.log(bst.getWidth() + "", 1);
-                    case "diameter" -> log.log(bst.getDiameter() + "", 1);
-                    case "size" -> log.log(bst.size() + "", 1);
-                    case "isfull" -> log.log("Bst is" + (bst.isFullTree() ? " " : " not ") + "full", 1);
-                    case "largest" -> log.log(bst.getLargest() + "", 1);
-                    case "smallest" -> log.log(bst.getSmallest() + "", 1);
-                    case "levelwidths" -> log.log(Arrays.toString(bst.getLevelWidths()), 1);
-                    default -> log.log("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
+                    case "numleaves" -> Log.log(bst.countLeaves() + "", 1);
+                    case "numlevels" -> Log.log(bst.countLevels() + "", 1);
+                    case "width" -> Log.log(bst.getWidth() + "", 1);
+                    case "diameter" -> Log.log(bst.getDiameter() + "", 1);
+                    case "size" -> Log.log(bst.size() + "", 1);
+                    case "isfull" -> Log.log("Bst is" + (bst.isFullTree() ? " " : " not ") + "full", 1);
+                    case "largest" -> Log.log(bst.getLargest() + "", 1);
+                    case "smallest" -> Log.log(bst.getSmallest() + "", 1);
+                    case "levelwidths" -> Log.log(Arrays.toString(bst.getLevelWidths()), 1);
+                    default -> Log.err("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
                 }
                 else log.log("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
             }
