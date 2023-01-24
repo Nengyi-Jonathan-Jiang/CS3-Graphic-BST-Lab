@@ -1,3 +1,5 @@
+package app;
+
 import java.util.*;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
@@ -248,7 +250,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 	 * @return The height of the tree. This is the number of edges from the root to the deepest leaf
 	 */
 	public int getHeight () {
-		return root == null ? 0 : root.getHeight();
+		return root == null ? -1 : root.getHeight();
 	}
 
 	/**
@@ -342,5 +344,82 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 		// Java FP is nice, but verbose
 		// Whatever, I will use it because I am lazy
 		return Arrays.stream(getLevels()).mapToInt(i -> (int) Arrays.stream(i).filter(Objects::nonNull).count()).toArray();
+	}
+
+
+	public void print() {
+		if (isEmpty()) {
+			System.out.println("Empty Tree");
+			return;
+		}
+
+		final int height = countLevels();
+		final BSTNode<T>[][] levels = new BSTNode[height][];
+		levels[0] = new BSTNode[] { root };
+		for (int h = 1; h < height; h++) {
+			int size = 1 << h;
+			levels[h] = new BSTNode[size];
+			for (int i = 0; i * 2 < size; i++) {
+				var n = levels[h - 1][i];
+				if (n != null) {
+					levels[h][i * 2] = n.getLeftChild();
+					levels[h][i * 2 + 1] = n.getRightChild();
+				}
+			}
+		}
+
+		final int[][] widths = new int[height][];
+		for (int r = height - 1; r >= 0; r--) {
+			widths[r] = new int[levels[r].length];
+
+			for (int i = 0; i < levels[r].length; i++) {
+				if (levels[r][i] == null) {
+					if (levels[r][i ^ 1] != null) {
+						for (int rr = r, ii = i; rr < height; rr++, ii *= 2) {
+							widths[rr][ii] = 4;
+						}
+					}
+				} else {
+					int w = levels[r][i].getValue().toString().length() + 3;
+					int width = r == height - 1
+							? w
+							: Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
+					widths[r][i] = width;
+
+					if (!levels[r][i].hasRightChild() && !levels[r][i].hasLeftChild()) {
+						for (int rr = r, ii = i; rr < height; rr++, ii *= 2) {
+							widths[rr][ii] = width;
+						}
+					}
+				}
+			}
+		}
+
+		for (int r = 0; r < height; r++) {
+			for (int i = 0; i < levels[r].length; i++) {
+				var node = levels[r][i];
+				int w = widths[r][i];
+
+				if (w == 0) continue;
+
+				if (node == null) {
+					System.out.print(ANSICode.WHITE + "[");
+					System.out.print("-".repeat(w - 3));
+					System.out.print("] " + ANSICode.CLEAR);
+				} else {
+					_printNode(node, w);
+				}
+			}
+			System.out.println();
+		}
+	}
+	protected void _printNode(BSTNode<T> node, int targetWidth){
+		System.out.print("[" + ANSICode.BOLD);
+
+		String s = node.getValue().toString();
+		int length = s.length();
+		int lp = (targetWidth - 3 - length) / 2;
+		int rp = targetWidth - 3 - lp - length;
+		System.out.print(" ".repeat(lp) + s + " ".repeat(rp) + ANSICode.CLEAR + "] ");
 	}
 }

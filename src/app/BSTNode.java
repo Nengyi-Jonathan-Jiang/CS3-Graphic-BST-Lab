@@ -1,3 +1,5 @@
+package app;
+
 public class BSTNode<T extends Comparable<T>> {
 	protected BSTNode<T> left = null, right = null, parent = null;
 	protected T value;

@@ -1,3 +1,5 @@
+package app;
+
 public class NumberOrString implements Comparable<NumberOrString> {
 	public final Object value;
 	private final type t;
@@ -33,28 +35,12 @@ public class NumberOrString implements Comparable<NumberOrString> {
 		return value.toString();
 	}
 
-	public int getIntVal () {
-		return (Integer) value;
-	}
-
 	public double getDoubleVal () {
 		return t == type.I ? Double.valueOf((int) value) : (Double) value;
 	}
 
-	public String getStringVal () {
-		return (String) value;
-	}
-
-	public Object getVal () {
-		return value;
-	}
-
-	public boolean isDouble () {
-		return t == type.D;
-	}
-
-	public boolean isInt () {
-		return t == type.I;
+	public String getRepr() {
+		return t == type.S ? "\"" + value + "\"" : value.toString();
 	}
 
 	public boolean isString () {

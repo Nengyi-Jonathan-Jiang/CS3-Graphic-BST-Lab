@@ -1,3 +1,5 @@
+package app;
+
 import java.util.*;
 
 public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> {

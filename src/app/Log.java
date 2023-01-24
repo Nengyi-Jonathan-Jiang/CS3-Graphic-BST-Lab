@@ -1,3 +1,5 @@
+package app;
+
 import java.awt.Color;
 import java.util.*;
 
@@ -8,7 +10,7 @@ public class Log {
 
 	private static void _addMessage (String message, LogLevel level) {
 		log.addFirst(new LogItem(message, level));
-		System.out.println(level.tColor + message + Main.ANSI_CODE.CLEAR);
+		System.out.println(level.tColor + message + ANSICode.CLEAR);
 	}
 
 	public static void err (String message) {
@@ -30,7 +32,7 @@ public class Log {
 	public static void echoInput (String input, boolean logToTerminal) {
 		log.addFirst(new LogItem(input, LogLevel.Echo));
 		if (logToTerminal)
-			System.out.println(LogLevel.Echo.tColor + input + Main.ANSI_CODE.CLEAR);
+			System.out.println(LogLevel.Echo.tColor + input + ANSICode.CLEAR);
 	}
 
 	public static void output (String output) {
@@ -57,17 +59,17 @@ public class Log {
 
 	public enum LogLevel {
 
-		Echo(Main.ANSI_CODE.CLEAR, Color.BLACK),
-		Output(Main.ANSI_CODE.BLUE, Color.BLUE),
-		Error(Main.ANSI_CODE.RED, Color.RED),
-		Warning(Main.ANSI_CODE.YELLOW, Color.YELLOW.darker()),
-		Normal(Main.ANSI_CODE.BLUE, Color.BLUE),
-		Verbose(Main.ANSI_CODE.BLUE, Color.BLUE);
+		Echo(ANSICode.CLEAR, Color.BLACK),
+		Output(ANSICode.BLUE, Color.BLUE),
+		Error(ANSICode.RED, Color.RED),
+		Warning(ANSICode.YELLOW, Color.YELLOW.darker()),
+		Normal(ANSICode.BLUE, Color.BLUE),
+		Verbose(ANSICode.BLUE, Color.BLUE);
 
-		public final Main.ANSI_CODE tColor;
+		public final ANSICode tColor;
 		public final Color gColor;
 
-		LogLevel (Main.ANSI_CODE tColor, Color gColor) {
+		LogLevel (ANSICode tColor, Color gColor) {
 			this.tColor = tColor;
 			this.gColor = gColor;
 		}

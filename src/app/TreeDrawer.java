@@ -1,10 +1,12 @@
+package app;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
 public abstract class TreeDrawer {
-	public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+	public static Font font = FontLoader.load("app/JBMono.ttf").deriveFont(12f);
 	private static final Graphics dummyGraphics = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getGraphics();
 
 	public static int getNodePadding () {

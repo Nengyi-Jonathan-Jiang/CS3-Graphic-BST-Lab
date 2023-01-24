@@ -1,3 +1,5 @@
+package app;
+
 class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	public enum Color {RED, BLACK}
 
@@ -13,6 +15,14 @@ class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 
 	public static Color getColor (RBTNode<?> node) {
 		return node == null ? Color.BLACK : node.getColor();
+	}
+
+	public boolean isBlack(){
+		return getColor() == Color.BLACK;
+	}
+
+	public boolean isRed(){
+		return getColor() == Color.RED;
 	}
 
 	public static boolean isRed (RBTNode<?> node) {
