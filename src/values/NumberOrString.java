@@ -1,4 +1,4 @@
-package app;
+package values;
 
 public class NumberOrString implements Comparable<NumberOrString> {
 	public final Object value;
@@ -6,12 +6,12 @@ public class NumberOrString implements Comparable<NumberOrString> {
 
 	private enum type {I, D, S}
 
-	NumberOrString (int i) {
+	public NumberOrString (int i) {
 		value = i;
 		t = type.I;
 	}
 
-	NumberOrString (double d) {
+	public NumberOrString (double d) {
 		value = d;
 		t = type.D;
 	}

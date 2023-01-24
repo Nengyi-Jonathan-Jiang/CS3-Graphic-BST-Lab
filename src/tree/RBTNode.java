@@ -1,6 +1,6 @@
-package app;
+package tree;
 
-class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
+public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	public enum Color {RED, BLACK}
 
 	private Color color = Color.RED;

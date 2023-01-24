@@ -1,4 +1,6 @@
-package app;
+package tree;
+
+import util.ANSICode;
 
 public class RBT<T extends Comparable<T>> extends BST<T> {
     /**
@@ -220,7 +222,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
             }
         }
 
-        int compare = value.compareTo(parent.value);
+        int compare = value.compareTo(parent.getValue());
 
         if (compare < 0)
             if (parent.hasLeftChild())
@@ -267,7 +269,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
 
         if (sib.getSibling() == null)
             System.out.println("Fix double black null");
-        else System.out.println("Fix double black " + sib.getSibling().value);
+        else System.out.println("Fix double black " + sib.getSibling().getValue());
 
         if (sib.isRed()) { // Red sibling
             if (sib.isLeftChild()) {

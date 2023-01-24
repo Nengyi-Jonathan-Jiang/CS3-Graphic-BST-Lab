@@ -1,5 +1,12 @@
 package app;
 
+import tree.BST;
+import tree.RBT;
+import tree.Traversal;
+import util.FontLoader;
+import util.Log;
+import values.NumberOrString;
+
 import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +20,7 @@ public class App extends JFrame {
 
 	private final BST<NumberOrString> bst;
 	private String input = "";
-	private static final Font font = FontLoader.load("app/JBMono.ttf").deriveFont(12f);
+	private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
 	private static final String STRING_MATCHING_REGEX = "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'";
 
@@ -30,7 +37,7 @@ public class App extends JFrame {
 	public App (boolean isRedBlackTree) {
 		bst = isRedBlackTree ? new RBT<>() : new BST<>();
 
-		setTitle("Graphics BST Lab");
+		setTitle("Graphics bst.BST Lab");
 		setMinimumSize(new Dimension(50, 50));
 		setSize(new Dimension(1000, 800));
 		setVisible(true);
@@ -126,7 +133,7 @@ public class App extends JFrame {
 				Log.err("Bad input: insertRand should be called with 2-3 int args");
 			}
 			case "clear" -> {
-				bst.root = null;
+				bst.clear();
 				Log.log("Cleared tree");
 			}
 			case "delete" -> {
@@ -157,11 +164,11 @@ public class App extends JFrame {
 			case "help" -> {
 				for (var line : new String[] {
 					"──── Commands ────",
-					"insert <values:number...> : Adds the values to the BST",
+					"insert <values:number...> : Adds the values to the bst.BST",
 					"    Example: \"insert 3 1 0 2 6 4 5 9 11\"",
 					"insertRand <low:number> <high:number> [amount:number] : inserts <amount> random numbers in the range [<low>, <high>]",
 					"    Example: \"insertRand 0 99 10\"",
-					"delete <values:number...> : Deletes the values from the BST",
+					"delete <values:number...> : Deletes the values from the bst.BST",
 					"    Example: \"delete 1 2 3 4\"",
 					"style <style: 1|2|3|4> : Sets the drawing style of the tree",
 					"    Example: \"style 1\"",

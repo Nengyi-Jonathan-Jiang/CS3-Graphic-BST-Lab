@@ -1,10 +1,12 @@
-package app;
+package tree;
+
+import util.ANSICode;
 
 import java.util.*;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
 public class BST<T extends Comparable<T>> implements Set<T> {
-	BSTNode<T> root = null;
+	protected BSTNode<T> root = null;
 
 	/**
 	 * @param value The value to search for
@@ -126,7 +128,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 
 	/**
 	 * @param c A collection of values to intersect with this tree
-	 * @return A new BST containing the elements common to this tree and the given values
+	 * @return A new bst.BST containing the elements common to this tree and the given values
 	 */
 	public BST<T> intersection (Collection<?> c){
 		BST<T> res = new BST<>();
@@ -141,7 +143,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 
 	/**
 	 * @param c The values to keep in the tree
-	 * @return A new BST containing the elements common to this tree and the given values
+	 * @return A new bst.BST containing the elements common to this tree and the given values
 	 */
 	@Override
 	public boolean retainAll (Collection<?> c) {
@@ -243,7 +245,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 
 	@Override
 	public String toString () {
-		return root == null ? "BST{}" : "BST" + root;
+		return root == null ? "bst.BST{}" : "bst.BST" + root;
 	}
 
 	/**

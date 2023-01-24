@@ -1,4 +1,4 @@
-package app;
+package tree;
 
 import java.util.*;
 
@@ -95,7 +95,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 				public T next () {
 					var res = nodes.pop();
 					curr = res.getRightChild();
-					return res.value;
+					return res.getValue();
 				}
 			};
 		}
@@ -124,7 +124,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 				public T next () {
 					var res = nodes.pop();
 					curr = res.getLeftChild();
-					return res.value;
+					return res.getValue();
 				}
 			};
 		}
@@ -152,7 +152,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 						nodes.add(node.getLeftChild());
 					if (node.hasRightChild())
 						nodes.add(node.getRightChild());
-					return node.value;
+					return node.getValue();
 				}
 			};
 		}
