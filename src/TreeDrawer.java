@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Stack;
 
 public abstract class TreeDrawer {
-
     public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
     private static final Graphics dummyGraphics = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getGraphics();
 

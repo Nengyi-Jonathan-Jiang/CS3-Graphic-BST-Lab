@@ -68,13 +68,13 @@ public class App extends JFrame {
         Scanner scan = new Scanner(System.in);
         while(scan.hasNextLine()){
             String line = scan.nextLine();
-            Log.echoInput(">>> " + line);
+            Log.echoInput(">>> " + line, false);
             evaluateCommand(new Scanner(line));
         }
     }
 
     private void evaluateCommand(){
-        Log.echoInput(">>> " + input);
+        Log.echoInput(">>> " + input, true);
         evaluateCommand(input);
         input = "";
     }
@@ -212,20 +212,20 @@ public class App extends JFrame {
             }
             case "query" -> {
                 if(scan.hasNext()) switch(scan.next().toLowerCase()) {
-                    case "numleaves" -> Log.log(bst.countLeaves() + "", 1);
-                    case "numlevels" -> Log.log(bst.countLevels() + "", 1);
-                    case "width" -> Log.log(bst.getWidth() + "", 1);
-                    case "diameter" -> Log.log(bst.getDiameter() + "", 1);
-                    case "size" -> Log.log(bst.size() + "", 1);
-                    case "isfull" -> Log.log("Bst is" + (bst.isFullTree() ? " " : " not ") + "full", 1);
-                    case "largest" -> Log.log(bst.getLargest() + "", 1);
-                    case "smallest" -> Log.log(bst.getSmallest() + "", 1);
-                    case "levelwidths" -> Log.log(Arrays.toString(bst.getLevelWidths()), 1);
-                    default -> Log.err("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
+                    case "numleaves" -> Log.output(bst.countLeaves() + "");
+                    case "numlevels" -> Log.output(bst.countLevels() + "");
+                    case "width" -> Log.output(bst.getWidth() + "");
+                    case "diameter" -> Log.output(bst.getDiameter() + "");
+                    case "size" -> Log.output(bst.size() + "");
+                    case "isfull" -> Log.output("Bst is" + (bst.isFullTree() ? " " : " not ") + "full");
+                    case "largest" -> Log.output(bst.getLargest() + "");
+                    case "smallest" -> Log.output(bst.getSmallest() + "");
+                    case "levelwidths" -> Log.output(Arrays.toString(bst.getLevelWidths()));
+                    default -> Log.err("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest");
                 }
-                else log.log("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest", -1);
+                else Log.err("Invalid parameter to query: Must be one of numLeaves, numLevels, width, diameter, size, levelWidths, isFull, largest, smallest");
             }
-            default -> log.log("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands", -1);
+            default -> Log.err("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands");
         }
     }
 
@@ -256,7 +256,7 @@ public class App extends JFrame {
         graphics.setFont(font);
         graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, getHeight() - 20);
 
-        log.forEach((int i, String message, float t, int status) -> {
+        Log.forEach((int i, String message, float t, int status) -> {
             double opacity = 1 - Math.pow(t, 4);
             Color color = status == -1 ? Color.RED : status == 1 ? Color.BLUE : Color.BLACK;
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int)(opacity * 255), 255), 0)));

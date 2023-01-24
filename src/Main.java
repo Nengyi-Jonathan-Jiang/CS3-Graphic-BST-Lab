@@ -6,8 +6,8 @@ public class Main {
     static enum ANSI_CODES {
         CLEAR,
         BLACK(30), RED(31), GREEN(32),
-        YELLOW(33), BLUE(34), PURPLE(35),
-        CYAN(36), WHITE(37),
+        YELLOW(33), BLUE(36), PURPLE(35),
+        ORANGE(34), WHITE(37),
         BOLD(1, 0), UNDERLINE(4, 0);
 
         private final int c, d;

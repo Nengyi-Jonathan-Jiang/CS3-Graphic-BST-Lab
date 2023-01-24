@@ -9,7 +9,7 @@ public class Log {
 
     private static void _addMessage(String message, LogLevel level){
         log.addFirst(new LogItem(message, level));
-        System.out.println(message);
+        System.out.println(level.tColor + message + Main.ANSI_CODES.CLEAR);
     }
 
     public static void err(String message){
@@ -28,8 +28,10 @@ public class Log {
         _addMessage(message, LogLevel.Verbose);
     }
 
-    public static void echoInput(String input){
-        _addMessage(input, LogLevel.Echo);
+    public static void echoInput(String input, boolean logToTerminal){
+        log.addFirst(new LogItem(input, LogLevel.Echo));
+        if(logToTerminal)
+            System.out.println(LogLevel.Echo.tColor + input + Main.ANSI_CODES.CLEAR);
     }
 
     public static void output(String output){
@@ -56,7 +58,7 @@ public class Log {
 
     public enum LogLevel {
 
-        Echo(Main.ANSI_CODES.BLACK, Color.BLACK),
+        Echo(Main.ANSI_CODES.CLEAR, Color.BLACK),
         Output(Main.ANSI_CODES.BLUE, Color.BLUE),
         Error(Main.ANSI_CODES.RED, Color.RED),
         Warning(Main.ANSI_CODES.YELLOW, Color.YELLOW.darker()),
