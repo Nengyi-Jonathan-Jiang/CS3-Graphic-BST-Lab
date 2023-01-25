@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 public class TreeDrawerOffset extends TreeDrawer {
 
 	@Override
-	public <T extends Comparable<T>> int[][] calculatePositions (BSTNode<T>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+	public int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics) {
 		final int[][] widths = new int[height][];
 		for (int r = height - 1; r >= 0; r--) {
 			widths[r] = new int[levels[r].length];
@@ -41,7 +41,7 @@ public class TreeDrawerOffset extends TreeDrawer {
 			int sum = 0;
 			x[r] = new int[widths[r].length];
 			for (int i = 0; i < widths[r].length; i++) {
-				x[r][i] = sum + widths[r][i] / 2 + windowWidth / 2 - widths[0][0] / 2;
+				x[r][i] = sum + widths[r][i] / 2 - widths[0][0] / 2;
 				sum += widths[r][i];
 			}
 		}

@@ -9,14 +9,14 @@ import java.util.*;
 public class TreeDrawerInOrder extends TreeDrawer {
 
 	@Override
-	public <T extends Comparable<T>> int[][] calculatePositions (BSTNode<T>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+	public int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics) {
 		// Inorder traversal
 
 		int[][] x = new int[height][];
 		for (int h = 0; h < height; h++) x[h] = new int[1 << h];
 		int left = 0;
 
-		Stack<BSTNode<T>> nStk = new Stack<>();
+		Stack<BSTNode<?>> nStk = new Stack<>();
 		Stack<Integer> iStk = new Stack<>(), hStk = new Stack<>();
 		var currN = levels[0][0];
 		int currI = 0;
@@ -44,11 +44,10 @@ public class TreeDrawerInOrder extends TreeDrawer {
 			}
 		}
 
-		for (int h = 0; h < height; h++) {
-			for (int i = 0; i < x[h].length; i++) {
-				x[h][i] += windowWidth / 2 - left / 2;
-			}
-		}
+		for (int h = 0; h < height; h++)
+			for (int i = 0; i < x[h].length; i++)
+				x[h][i] -= left / 2;
+
 		return x;
 	}
 }

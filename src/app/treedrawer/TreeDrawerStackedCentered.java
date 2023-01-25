@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 public class TreeDrawerStackedCentered extends TreeDrawer {
 
 	@Override
-	public <T extends Comparable<T>> int[][] calculatePositions (BSTNode<T>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+	public int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics) {
 		final int LR_OFFSET = getNodePadding() * 2;
 
 		final int[][] widths = new int[height][];
@@ -71,7 +71,7 @@ public class TreeDrawerStackedCentered extends TreeDrawer {
 					else break;
 				}
 
-				x[h][i] = left + pos[h][i] + windowWidth / 2 - widths[0][0] / 2;
+				x[h][i] = left + pos[h][i] - widths[0][0] / 2;
 				left += widths[h][i];
 
 				for (int hh = h, ii = i; hh-- > 0; ) {

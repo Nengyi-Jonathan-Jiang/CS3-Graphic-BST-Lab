@@ -24,34 +24,77 @@ public abstract class TreeDrawer {
 		return new Dimension((int) size.getWidth(), (int) size.getHeight());
 	}
 
-	protected abstract <T extends Comparable<T>> int[][] calculatePositions (BSTNode<T>[][] levels, int height, int windowWidth, Graphics2D graphics);
+	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
 
-	public final <T extends Comparable<T>> void drawTree (BST<T> bst, int windowWidth, Graphics2D graphics) {
-		if (bst == null || bst.getRoot() == null) return;
+	private BSTNode<?>[][] prevLevels = new BSTNode<?>[][]{};
+	private int[][] prevX = new int[][]{};
 
+	public final void drawTree (BST<?> bst, int windowWidth, Graphics2D graphics) {
 		final int height = bst.countLevels();
-		final BSTNode<T>[][] levels = new BSTNode[height][];
-		levels[0] = new BSTNode[] { bst.getRoot() };
+		BSTNode<?>[][] levels;
+		int[][] x;
 
-		for (int h = 1; h < height; h++) {
-			int size = 1 << h;
-			levels[h] = new BSTNode[size];
-			for (int i = 0; i * 2 < size; i++) {
-				var n = levels[h - 1][i];
-				if (n != null) {
-					levels[h][i * 2] = n.getLeftChild();
-					levels[h][i * 2 + 1] = n.getRightChild();
+		if (bst.isEmpty()){
+			levels = new BSTNode<?>[][]{};
+			x = new int[][]{};
+		}
+		else {
+			levels = new BSTNode[height][];
+			levels[0] = new BSTNode[]{bst.getRoot()};
+
+			for (int h = 1; h < height; h++) {
+				int size = 1 << h;
+				levels[h] = new BSTNode[size];
+				for (int i = 0; i * 2 < size; i++) {
+					var n = levels[h - 1][i];
+					if (n != null) {
+						levels[h][i * 2] = n.getLeftChild();
+						levels[h][i * 2 + 1] = n.getRightChild();
+					}
 				}
 			}
+
+			x = calculatePositions(levels, height, windowWidth, graphics);
 		}
 
-		int[][] x = calculatePositions(levels, height, windowWidth, graphics);
 		int[][] y = new int[height][];
 		for (int h = 0; h < height; h++) {
 			y[h] = new int[1 << h];
 			Arrays.fill(y[h],
-				(h * 6 + 1) * getNodePadding() + 40 + getRenderedSize("|").height / 2
+				(h * 6 + 1) * getNodePadding() + 40 + getRenderedSize("foo").height / 2
 			);
+		}
+
+		{
+			BSTNode<?>[][] temp = new BSTNode<?>[height][];
+			System.arraycopy(prevLevels, 0, temp, 0, Math.min(height, prevLevels.length));
+			prevLevels = temp;
+		}
+		{
+			int[][] temp = new int[height][];
+			for(int i = 0; i < height; i++){
+				temp[i] = new int[1 << i];
+				Arrays.fill(temp[i], Integer.MIN_VALUE);
+			}
+			System.arraycopy(prevX, 0, temp, 0, Math.min(height, prevX.length));
+			prevX = temp;
+		}
+		for(int i = 0; i < height; i++){
+			for(int j = 0; j < (1 << i); j++){
+				if(prevX[i][j] == Integer.MIN_VALUE){
+					prevX[i][j] = x[i][j];
+				}
+				else {
+					prevX[i][j] = x[i][j] + (prevX[i][j] - x[i][j]) * 2 / 3;
+				}
+			}
+			System.arraycopy(prevX[i], 0, x[i], 0, 1 << i);
+		}
+
+		for(int i = 0; i < height; i++){
+			for(int j = 0; j < (1 << i); j++){
+				x[i][j] += windowWidth / 2;
+			}
 		}
 
 		graphics.setFont(font);
@@ -75,7 +118,7 @@ public abstract class TreeDrawer {
 					graphics.setColor(Color.WHITE);
 					graphics.fillRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 
-					graphics.setColor(node instanceof RBTNode && RBTNode.getColor((RBTNode<T>) node) == RBTNode.Color.RED ? Color.RED : Color.BLACK);
+					graphics.setColor(node instanceof RBTNode && RBTNode.getColor((RBTNode<?>) node) == RBTNode.Color.RED ? Color.RED : Color.BLACK);
 					graphics.drawRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 					if (node.getValue() instanceof NumberOrString && ((NumberOrString) node.getValue()).isString()) {
 						graphics.setColor(Color.GREEN.darker());
@@ -86,4 +129,3 @@ public abstract class TreeDrawer {
 		}
 	}
 }
-
