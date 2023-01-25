@@ -25,10 +25,6 @@ public class Log {
 		_addMessage(message, LogLevel.Normal);
 	}
 
-	public static void logVerbose (String message) {
-		_addMessage(message, LogLevel.Verbose);
-	}
-
 	public static void echoInput (String input, boolean logToTerminal) {
 		log.addFirst(new LogItem(input, LogLevel.Echo));
 		if (logToTerminal)
@@ -62,7 +58,6 @@ public class Log {
 		Echo(ANSICode.CLEAR, Color.BLACK),
 		Output(ANSICode.BLUE, Color.BLUE),
 		Error(ANSICode.RED, Color.RED),
-		Warning(ANSICode.YELLOW, Color.YELLOW.darker()),
 		Normal(ANSICode.BLUE, Color.BLUE),
 		Verbose(ANSICode.BLUE, Color.BLUE);
 

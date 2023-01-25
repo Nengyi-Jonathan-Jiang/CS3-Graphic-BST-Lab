@@ -152,13 +152,15 @@ public class BSTNode<T extends Comparable<T>> {
 		return (hasLeftChild() ? 1 : 0) + (hasRightChild() ? 1 : 0);
 	}
 
-	public static <T extends Comparable<T>> void swapContents (BSTNode<T> a, BSTNode<T> b) {
+	public static <T extends Comparable<T>> void swapValues (BSTNode<T> a, BSTNode<T> b) {
 		T temp = a.value;
 		a.value = b.value;
 		b.value = temp;
 	}
 
-	public static <T extends Comparable<T>> BSTNode<T> deepCopy(BSTNode<T> node){
-		return node == null ? null : new BSTNode<>(node.value, deepCopy(node.left), deepCopy(node.right));
+	public BSTNode<T> getInorderSuccessor(){
+		var n = getRightChild();
+		while (n != null && n.hasLeftChild()) n = n.getLeftChild();
+		return n;
 	}
 }

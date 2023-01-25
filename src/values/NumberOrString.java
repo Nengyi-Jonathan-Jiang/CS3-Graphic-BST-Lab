@@ -39,10 +39,6 @@ public class NumberOrString implements Comparable<NumberOrString> {
 		return t == type.I ? Double.valueOf((int) value) : (Double) value;
 	}
 
-	public String getRepr() {
-		return t == type.S ? "\"" + value + "\"" : value.toString();
-	}
-
 	public boolean isString () {
 		return t == type.S;
 	}

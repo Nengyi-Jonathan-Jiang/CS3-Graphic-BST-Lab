@@ -1,5 +1,6 @@
 package util;
 
+@SuppressWarnings("unused")
 public enum ANSICode {
     CLEAR,
     BLACK(30), RED(31), GREEN(32), YELLOW(33), BLUE(36), PURPLE(35), ORANGE(34), WHITE(37),

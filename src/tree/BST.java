@@ -1,17 +1,18 @@
 package tree;
 
+import org.jetbrains.annotations.NotNull;
 import util.ANSICode;
 
 import java.util.*;
 
 // Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
-public class BST<T extends Comparable<T>> implements Set<T> {
+public class BST<T extends Comparable<T>> implements Collection<T> {
 	protected BSTNode<T> root = null;
 
 	/**
 	 * @param value The value to search for
 	 * @return whether the value exists in the tree
-	 * @throws ClassCastException when value is not comparable
+	 * @throws ClassCastException when value is not a {@link Comparable}
 	 */
 	public boolean contains (Object value) {
 		if (!(value instanceof Comparable<?>)) throw new ClassCastException();
@@ -21,7 +22,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 	/**
 	 * @param values The values to search for
 	 * @return whether all the values exists in the tree
-	 * @throws ClassCastException when any of the values is not comparable
+	 * @throws ClassCastException when any of the values is not a {@link Comparable}
 	 */
 	public boolean containsAll (Collection<?> values) {
 		return values.stream().allMatch(this::contains);
@@ -71,7 +72,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 	/**
 	 * @param value the value to erase from the tree
 	 * @return whether a value was removed as a result of this call
-	 * @throws ClassCastException when value is not comparable
+	 * @throws ClassCastException when value is not a {@link Comparable}
 	 */
 	@Override
 	public boolean remove (Object value) {
@@ -87,25 +88,31 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 		// I can't even check that value is of type T! (I have to take it as Object because Collection dictates so)
 		// I can only ensure it is a Comparable (which is just sufficient to prevent breaking the code)
 		// *Breaths heavily*
+		// Oh well.
 		// </rant>
 
-		if (!(value instanceof Comparable<?>)) throw new ClassCastException(); // See what I have to resort to? Yuck.
+		if (!(value instanceof Comparable<?>)) return false;    // Can't remove a value that isn't of the right type
 
+		// Find the node to be deleted
 		BSTNode<T> target = find((T) value);
+
+		// If target not exist don't do anything
 		if (target == null) return false;
 
-		// Delete root
-		if (target == root && target.isLeaf()) root = null;
-
-		else if (target.getDegree() == 2) {  // Find inorder successor n and swap, then erase n
-			BSTNode<T> node = target.getRightChild();
-			while (node.hasLeftChild()) node = node.getLeftChild();
-
-			BSTNode.swapContents(target, node);
-			deleteSimple(node);
-		} else {  // Deg = 0 or 1, put child node (if exists) into the place that the node previously occupied
-			deleteSimple(target);
+		if (target == root && target.isLeaf()) {
+			root = null; // If height 0 and delete root, just set root to null
+			return true;
 		}
+
+		if (target.getDegree() == 2) {  // If deg 2, must first find inorder successor n and swap
+			// The node to swap with (the inorder successor)
+			BSTNode<T> swap = target.getInorderSuccessor();
+
+			BSTNode.swapValues(target, swap);
+
+			target = swap;
+		}
+		deleteSimple(target);
 		return true;
 	}
 
@@ -146,7 +153,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 	 * @return A new bst.BST containing the elements common to this tree and the given values
 	 */
 	@Override
-	public boolean retainAll (Collection<?> c) {
+	public boolean retainAll (@NotNull Collection<?> c) {
 		var temp = intersection(c);
 		boolean res = !new ArrayList<>(this).equals(new ArrayList<>(temp)); // This operation should be O(N) I think
 		root = temp.getRoot();  // Hehe just copy the temp tree to this tree
@@ -238,7 +245,7 @@ public class BST<T extends Comparable<T>> implements Set<T> {
 		return stream().toArray();
 	}
 
-	public <U> U[] toArray (U[] a) {
+	public <U> U[] toArray (U [] a) {
 		// IDK how hacky this is, I never understood the purpose of this method overload
 		return (U[]) toArray();
 	}

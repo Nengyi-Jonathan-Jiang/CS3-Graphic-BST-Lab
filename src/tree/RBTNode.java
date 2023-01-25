@@ -53,12 +53,6 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 		if (node != null) node.color = color;
 	}
 
-	@Override
-	public BSTNode<T> makeRoot () {
-		color = Color.BLACK;
-		return super.makeRoot();
-	}
-
 	public void swapColor () {
 		color = switch (color) {
 			case RED -> Color.BLACK;
@@ -66,7 +60,14 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 		};
 	}
 
-	// <editor-fold>
+	@Override
+	public BSTNode<T> makeRoot () {
+		color = Color.BLACK;
+		return super.makeRoot();
+	}
+
+	// <editor-fold desc="Overrides">
+	// All of these methods just override parent methods to return RBTNodes for convenience
 
 	@Override
 	public RBTNode<T> getLeftChild () {
@@ -101,4 +102,6 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	public RBTNode<T> getSibling () {
 		return (RBTNode<T>) super.getSibling();
 	}
+
+	// </editor-fold>
 }
