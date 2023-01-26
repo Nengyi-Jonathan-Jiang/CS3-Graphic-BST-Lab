@@ -233,8 +233,6 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
             return add(parent.getRightChild(), value);
         else
             fix(parent.insertRight(value));
-        //else return false; // else: Node already in tree, do nothing :)
-
         return true;
     }
 
