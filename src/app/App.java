@@ -33,12 +33,12 @@ public class App extends JFrame {
 		new TreeDrawerStacked(),
 		new TreeDrawerStackedCentered(),
 	};
-	private int currStyle = 0;
+	private int currStyle = 3;
 
 	public App (boolean isRedBlackTree) {
 		bst = isRedBlackTree ? new RBT<>() : new BST<>();
 
-		setTitle("Graphics bst.BST Lab");
+		setTitle("Graphics BST Lab");
 		setMinimumSize(new Dimension(50, 50));
 		setSize(new Dimension(1000, 800));
 		setVisible(true);
@@ -66,7 +66,7 @@ public class App extends JFrame {
 
 		new Timer(10, e -> repaint()).start();
 
-		evaluateCommand("insert 85 33 81 65 11 100 57 17 42 22 8 34 70 24 5 86 19 12 1 9");
+		evaluateCommand("help");
 
 		// STDIN loop
 		Scanner scan = new Scanner(System.in);

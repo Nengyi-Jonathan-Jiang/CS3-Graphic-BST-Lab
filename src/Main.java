@@ -8,7 +8,7 @@ public class Main {
 		var args = Arrays.asList(_args);
 		if(args.contains("--color"))
 			ANSICode.enable();
-		new App(args.contains("--rb"));
+		//new App(args.contains("--rb"));
 		new App(true);
 	}
 }
