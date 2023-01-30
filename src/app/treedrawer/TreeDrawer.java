@@ -26,9 +26,6 @@ public abstract class TreeDrawer {
 
 	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
 
-	private BSTNode<?>[][] prevLevels = new BSTNode<?>[][]{};
-	private int[][] prevX = new int[][]{};
-
 	public final void drawTree (BST<?> bst, int windowWidth, Graphics2D graphics) {
 		final int height = bst.countLevels();
 		BSTNode<?>[][] levels;
@@ -63,32 +60,6 @@ public abstract class TreeDrawer {
 			Arrays.fill(y[h],
 				(h * 6 + 1) * getNodePadding() + 40 + getRenderedSize("foo").height / 2
 			);
-		}
-
-		{
-			BSTNode<?>[][] temp = new BSTNode<?>[height][];
-			System.arraycopy(prevLevels, 0, temp, 0, Math.min(height, prevLevels.length));
-			prevLevels = temp;
-		}
-		{
-			int[][] temp = new int[height][];
-			for(int i = 0; i < height; i++){
-				temp[i] = new int[1 << i];
-				Arrays.fill(temp[i], Integer.MIN_VALUE);
-			}
-			System.arraycopy(prevX, 0, temp, 0, Math.min(height, prevX.length));
-			prevX = temp;
-		}
-		for(int i = 0; i < height; i++){
-			for(int j = 0; j < (1 << i); j++){
-				if(prevX[i][j] == Integer.MIN_VALUE){
-					prevX[i][j] = x[i][j];
-				}
-				else {
-					prevX[i][j] = x[i][j] + (prevX[i][j] - x[i][j]) * 2 / 3;
-				}
-			}
-			System.arraycopy(prevX[i], 0, x[i], 0, 1 << i);
 		}
 
 		for(int i = 0; i < height; i++){

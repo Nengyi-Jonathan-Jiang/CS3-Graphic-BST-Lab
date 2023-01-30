@@ -2,53 +2,19 @@ package tree;
 
 import util.ANSICode;
 
-public class RBT<T extends Comparable<T>> extends BST<T> {
+public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     /**
      * Performs a left-left rotation
      *
      * @param p p, the parent of x
      * @param g g, the grandparent of x
      */
-    private void LL_Rotation(RBTNode<T> p, RBTNode<T> g) {
-		/*-Subtree looks like:----
-		 *    ?
-		 *    g
-		 *  p   u
-		 * x s
-		 -----------------------*/
-        g.setLeftChild(p.getRightChild());
-		/*-Subtree looks like:----
-		 *  ?
-		 *  g
-		 * s u
-		 *
-		 * floating:
-		 *  p
-		 * x
-		 -----------------------*/
-        switch (g.getChildType()) {
-            case LEFT -> g.getParent().setLeftChild(p);
-            case RIGHT -> g.getParent().setRightChild(p);
-            case ROOT -> root = p.makeRoot();
-        }
-		/*-Subtree looks like:----
-		 *  ?
-		 *  p
-		 * x
-		 *
-		 * floating:
-		 *  g
-		 * s u
-		 -----------------------*/
-        p.setRightChild(g);
-		/*-Subtree looks like:----
-		 *   ?
-		 *   p
-		 * x   g
-		 *    s u
-		 -----------------------*/
+    @Override
+    protected void LL_Rotation(RBTNode<T> p, RBTNode<T> g) {
+        // Call the super rotate method
+        super.LL_Rotation(p, g);
 
-        // Finally, recolor the nodes
+        // Recolor the nodes
         g.makeRed();
         p.makeBlack();
     }
@@ -59,132 +25,14 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
      * @param p p, the parent of x
      * @param g g, the grandparent of x
      */
-    private void RR_Rotation(RBTNode<T> p, RBTNode<T> g) {
-		/*-Subtree looks like:----
-		 *    ?
-		 *    g
-		 *  u   p
-		 *     s x
-		 -----------------------*/
-        g.setRightChild(p.getLeftChild());
-		/*-Subtree looks like:----
-		 *  ?
-		 *  g
-		 * u s
-		 *
-		 * floating:
-		 *  p
-		 *   x
-		 -----------------------*/
-        switch (g.getChildType()) {
-            case LEFT -> g.getParent().setLeftChild(p);
-            case RIGHT -> g.getParent().setRightChild(p);
-            case ROOT -> root = p.makeRoot();
-        }
-		/*-Subtree looks like:----
-		 *  ?
-		 *  p
-		 *   x
-		 *
-		 * floating:
-		 *  g
-		 * u s
-		 -----------------------*/
-        p.setLeftChild(g);
-		/*-Subtree looks like:----
-		 *    ?
-		 *    p
-		 *  g   x
-		 * u s
-		 -----------------------*/
+    @Override
+    protected void RR_Rotation(RBTNode<T> p, RBTNode<T> g) {
+        // Call the super rotate method
+        super.RR_Rotation(p, g);
 
-        // Finally, recolor the nodes
+        // Recolor the nodes
         g.makeRed();
         p.makeBlack();
-    }
-
-    /**
-     * Performs a left-left rotation
-     *
-     * @param p p, the parent of x
-     * @return The new grandparent
-     */
-    private RBTNode<T> LL_Rotation(RBTNode<T> p) {
-        System.out.println("Performing Left-Left Rotation");
-
-        LL_Rotation(p, p.getParent());
-
-        return p;
-    }
-
-    /**
-     * Performs a right-right rotation
-     *
-     * @param p p, the parent of x
-     * @return The new grandparent
-     */
-    private RBTNode<T> RR_Rotation(RBTNode<T> p) {
-        System.out.println("Performing Right-Right Rotation");
-
-        RR_Rotation(p, p.getParent());
-
-        return p;
-    }
-
-    /**
-     * Performs a left-right rotation
-     *
-     * @param p p, the parent of x
-     * @return The new grandparent
-     */
-    private RBTNode<T> LR_Rotation(RBTNode<T> p) {
-        var x = p.getRightChild();
-        var g = p.getParent();
-
-        System.out.println("Performing Left-Right Rotation");
-
-        RR_Rotation(x, p);
-        LL_Rotation(x, g);
-
-        return x;
-    }
-
-    /**
-     * Performs a right-left rotation
-     *
-     * @param p p, the parent of x
-     * @return The new grandparent
-     */
-    private RBTNode<T> RL_Rotation(RBTNode<T> p) {
-        var x = p.getLeftChild();
-        var g = p.getParent();
-
-        System.out.println("Performing Right-Left rotation");
-
-        LL_Rotation(x, p);
-        RR_Rotation(x, g);
-
-        return x;
-    }
-
-    /**
-     * Automatically performs the correct rotation based on x's role in the tree
-     *
-     * @return The new grandparent
-     */
-    private RBTNode<T> rotate(RBTNode<T> x) {
-        var p = x.getParent();
-
-        if (p.isLeftChild() && x.isLeftChild())
-            return LL_Rotation(p);
-        else if (p.isLeftChild() && x.isRightChild())
-            return LR_Rotation(p);
-        else if (p.isRightChild() && x.isLeftChild())
-            return RL_Rotation(p);
-        else if (p.isRightChild() && x.isRightChild())
-            return RR_Rotation(p);
-        else
-            throw new Error("This should never happen");
     }
 
     /**
@@ -260,7 +108,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
     }
 
     /**
-     * @param sib The sibling of the double-black node (We use sibling because node itself may be null).
+     * @param sib The sibling of the double-black node (We pass in the sibling because node itself may be null).
      */
     private void fixDoubleBlack(RBTNode<T> sib) {
         var parent = sib.getParent();
@@ -281,7 +129,7 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         // Black sibling, has red child
         else if (RBTNode.isRed(sib.getLeftChild()) || RBTNode.isRed(sib.getRightChild())) {
             var origColor = RBTNode.getColor(sib.getParent());
-            var p = rotate(
+            var p = (RBTNode<T>) rotate(
                     sib.isLeftChild() ?    // If sib is left and red on left do left else right
                             RBTNode.isRed(sib.getLeftChild()) ? sib.getLeftChild() : sib.getRightChild()
                             :                   // Else if sib is right and red on right do right else left
@@ -323,6 +171,11 @@ public class RBT<T extends Comparable<T>> extends BST<T> {
         int lp = (targetWidth - 3 - length) / 2;
         int rp = targetWidth - 3 - lp - length;
         System.out.print(" ".repeat(lp) + s + " ".repeat(rp) + ANSICode.CLEAR + "] ");
+    }
+
+    @Override
+    protected RBTNode<T> constructNode(T value) {
+        return new RBTNode<>(value);
     }
 }
 
