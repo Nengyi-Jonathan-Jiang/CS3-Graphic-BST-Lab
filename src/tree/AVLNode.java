@@ -8,6 +8,4 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     public int getBalanceFactor(){
         return getHeight(left) - getHeight(right);
     }
-
-
 }

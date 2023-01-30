@@ -58,11 +58,11 @@ public class BST<T extends Comparable<T>> implements Collection<T> {
 		if (compare < 0) {
 			if (parent.hasLeftChild())
 				add(parent.getLeftChild(), value);
-			else parent.insertLeft(value);
+			else parent.setLeftChild(new BSTNode<>(value));
 		} else {
 			if (parent.hasRightChild())
 				add(parent.getRightChild(), value);
-			else parent.insertRight(value);
+			else parent.setRightChild(new BSTNode<>(value));
 		}
 		//else return false; // else: Node already in tree, do nothing :)
 
