@@ -21,7 +21,7 @@ public class TreeDrawerOffset extends TreeDrawer {
 					}
 				} else {
 					// Calculate width thing
-					int w = getRenderedSize(levels[r][i].getValue().toString()).width + getNodePadding() * 4;
+					int w = getRenderedSize(levels[r][i]);
 
 					int width = r == height - 1 ? w : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
 

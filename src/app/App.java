@@ -35,8 +35,8 @@ public class App extends JFrame {
 	};
 	private int currStyle = 3;
 
-	public App (boolean isRedBlackTree) {
-		bst = isRedBlackTree ? new RBT<>() : new BST<>();
+	public App (BST<NumberOrString> bst) {
+		this.bst = bst;
 
 		setTitle("Graphics BST Lab");
 		setMinimumSize(new Dimension(50, 50));

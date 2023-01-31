@@ -19,9 +19,13 @@ public abstract class TreeDrawer {
 		return font.getSize() / 2;
 	}
 
-	protected static Dimension getRenderedSize (String text) {
+	protected static Dimension getRenderedStringSize (String text) {
 		Rectangle2D size = dummyGraphics.getFontMetrics(font).getStringBounds(text, dummyGraphics);
 		return new Dimension((int) size.getWidth(), (int) size.getHeight());
+	}
+
+	protected static int getRenderedSize(BSTNode<?> node){
+		return getRenderedStringSize(node.getValue().toString()).width + getNodePadding() * 4;
 	}
 
 	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
@@ -58,7 +62,7 @@ public abstract class TreeDrawer {
 		for (int h = 0; h < height; h++) {
 			y[h] = new int[1 << h];
 			Arrays.fill(y[h],
-				(h * 6 + 1) * getNodePadding() + 40 + getRenderedSize("foo").height / 2
+				(h * 6 + 1) * getNodePadding() + 40 + getRenderedStringSize("foo").height / 2
 			);
 		}
 
@@ -76,7 +80,7 @@ public abstract class TreeDrawer {
 
 				if (node != null) {
 					String text = node.getValue().toString();
-					var d = getRenderedSize(text);
+					var d = getRenderedStringSize(text);
 					int X = x[h][i], Y = y[h][i];
 
 					var fm = graphics.getFontMetrics();

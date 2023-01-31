@@ -34,7 +34,7 @@ public class TreeDrawerInOrder extends TreeDrawer {
 				int i = iStk.pop();
 				int h = hStk.pop();
 
-				int w = getRenderedSize(node.getValue().toString()).width + getNodePadding();
+				int w = getRenderedSize(node) - 3 * getNodePadding();
 				x[h][i] = left + w / 2;
 				left += w;
 

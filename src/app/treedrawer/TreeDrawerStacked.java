@@ -29,7 +29,7 @@ public class TreeDrawerStacked extends TreeDrawer {
 					var right = node.getRightChild();
 
 					// Raw width of node (rect)
-					int w = getRenderedSize(levels[h][i].getValue().toString()).width + getNodePadding() * 4;
+					int w = getRenderedSize(levels[h][i]);
 
 					// degree 0: node width is text width, node pos is centered, no padding
 					if (left == null && right == null) {

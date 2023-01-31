@@ -159,8 +159,15 @@ public class BSTNode<T extends Comparable<T>> {
 	}
 
 	public BSTNode<T> getInorderSuccessor(){
-		var n = getRightChild();
-		while (n != null && n.hasLeftChild()) n = n.getLeftChild();
-		return n;
+		if(this.hasRightChild()) {
+			var n = getRightChild();
+			while (n != null && n.hasLeftChild()) n = n.getLeftChild();
+			return n;
+		}
+		else {
+			var n = this;
+			while(n != null && n.isRightChild()) n = n.getParent();
+			return n == null ? null : n.getParent();
+		}
 	}
 }

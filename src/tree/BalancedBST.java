@@ -205,16 +205,20 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
             if (parent.hasLeftChild())
                 return add(parent.getLeftChild(), value);
             else
-                fix((Node) parent.insertLeft(value));
+                fixInsert((Node) parent.insertLeft(value));
         else
             if (parent.hasRightChild())
                 return add(parent.getRightChild(), value);
             else
-                fix((Node) parent.insertRight(value));
+                fixInsert((Node) parent.insertRight(value));
         return true;
     }
 
-    protected abstract void fix(Node node);
+    /**
+     * Should be overridden by subclasses to fix imbalance after insertion.
+     * @param node The changed node
+     */
+    protected abstract void fixInsert (Node node);
 
     /**
      * Constructs a {@link Node} to use in the tree. This should be overridden by subclasses to return the right kind of

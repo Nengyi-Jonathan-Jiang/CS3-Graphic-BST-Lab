@@ -36,19 +36,6 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     /**
-     * @param value The value to insert into the tree
-     * @return whether the tree changed as a result of this call
-     */
-    @Override
-    public boolean add(T value) {
-        if (root == null) {
-            root = new RBTNode<>(value).makeRoot();
-            return true;
-        }
-        return add(root, value);
-    }
-
-    /**
      * @param _parent The root node to insert under
      * @param value   The value to insert into the tree
      * @return whether the tree changed as a result of this call
@@ -59,29 +46,13 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
 
         // Color swap if necessary
         if (RBTNode.isRed(parent.getLeftChild()) && RBTNode.isRed(parent.getRightChild())) {
-            if (parent == root) {
-                RBTNode.swapColor(parent.getLeftChild());
-                RBTNode.swapColor(parent.getRightChild());
-            } else {
-                RBTNode.swapColor(parent);
-                RBTNode.swapColor(parent.getLeftChild());
-                RBTNode.swapColor(parent.getRightChild());
-                fix(parent);
-            }
+            parent.swapColor();
+            RBTNode.swapColor(parent.getLeftChild());
+            RBTNode.swapColor(parent.getRightChild());
+            fixInsert(parent);
         }
 
-        int compare = value.compareTo(parent.getValue());
-
-        if (compare < 0)
-            if (parent.hasLeftChild())
-                return add(parent.getLeftChild(), value);
-            else
-                fix(parent.insertLeft(value));
-        else if (parent.hasRightChild())
-            return add(parent.getRightChild(), value);
-        else
-            fix(parent.insertRight(value));
-        return true;
+        return super.add(parent, value);
     }
 
     /**
@@ -89,10 +60,9 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
      *
      * @param x The node which may be violating the red rule
      */
-    protected void fix(RBTNode<T> x) {
+    protected void fixInsert (RBTNode<T> x) {
         // Check for Red violation
-        var p = x.getParent();
-        if (RBTNode.isRed(p))   // Do the corresponding rotation
+        if (RBTNode.isRed(x.getParent()))   // Do the corresponding rotation
             rotate(x);
 
         // Make root black
