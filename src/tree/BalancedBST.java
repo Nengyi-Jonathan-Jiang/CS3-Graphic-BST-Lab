@@ -1,6 +1,6 @@
 package tree;
 
-public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<T>> extends BST<T> {
+public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<T>> extends AbstractBST<T, Node> {
     /**
      * Performs a left-left rotation
      *
@@ -27,7 +27,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
         switch (g.getChildType()) {
             case LEFT -> g.getParent().setLeftChild(p);
             case RIGHT -> g.getParent().setRightChild(p);
-            case ROOT -> root = p.makeRoot();
+            case ROOT -> root = (Node) p.makeRoot();
         }
 		/*-Subtree looks like:----
 		 *  ?
@@ -73,7 +73,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
         switch (g.getChildType()) {
             case LEFT -> g.getParent().setLeftChild(p);
             case RIGHT -> g.getParent().setRightChild(p);
-            case ROOT -> root = p.makeRoot();
+            case ROOT -> root = (Node) p.makeRoot();
         }
 		/*-Subtree looks like:----
 		 *  ?
@@ -185,32 +185,31 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     @Override
     public boolean add(T value) {
         if (root == null) {
-            root = constructNode(value).makeRoot();
+            root = (Node) constructNode(value).makeRoot();
             return true;
         }
         return add(root, value);
     }
 
     /**
-     * @param _parent The root node to insert under
+     * @param parent The root node to insert under
      * @param value   The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
     @Override
-    protected boolean add(BSTNode<T> _parent, T value) {
-        Node parent = (Node) _parent;
+    protected boolean add(Node parent, T value) {
         int compare = value.compareTo(parent.getValue());
 
         if (compare < 0)
             if (parent.hasLeftChild())
-                return add(parent.getLeftChild(), value);
+                return add((Node) parent.getLeftChild(), value);
             else
-                fixInsert((Node) parent.insertLeft(value));
+                fixInsert((Node) parent.insertLeft(() -> new RBTNode<>(value)));
         else
             if (parent.hasRightChild())
-                return add(parent.getRightChild(), value);
+                return add((Node) parent.getRightChild(), value);
             else
-                fixInsert((Node) parent.insertRight(value));
+                fixInsert((Node) parent.insertRight(() -> new RBTNode<>(value)));
         return true;
     }
 

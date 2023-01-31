@@ -1,6 +1,6 @@
 package app.treedrawer;
 
-import tree.BST;
+import tree.AbstractBST;
 import tree.BSTNode;
 import tree.RBTNode;
 import util.FontLoader;
@@ -30,7 +30,7 @@ public abstract class TreeDrawer {
 
 	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
 
-	public final void drawTree (BST<?> bst, int windowWidth, Graphics2D graphics) {
+	public final void drawTree (AbstractBST<?, ?> bst, int windowWidth, Graphics2D graphics) {
 		final int height = bst.countLevels();
 		BSTNode<?>[][] levels;
 		int[][] x;

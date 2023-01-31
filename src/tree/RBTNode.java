@@ -85,20 +85,6 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	}
 
 	@Override
-	public RBTNode<T> insertLeft (T value) {
-		RBTNode<T> res = new RBTNode<>(value);
-		setLeftChild(res);
-		return res;
-	}
-
-	@Override
-	public RBTNode<T> insertRight (T value) {
-		RBTNode<T> res = new RBTNode<>(value);
-		setRightChild(res);
-		return res;
-	}
-
-	@Override
 	public RBTNode<T> getSibling () {
 		return (RBTNode<T>) super.getSibling();
 	}

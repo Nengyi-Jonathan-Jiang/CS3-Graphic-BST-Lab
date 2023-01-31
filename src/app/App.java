@@ -1,6 +1,7 @@
 package app;
 
 import app.treedrawer.*;
+import tree.AbstractBST;
 import tree.BST;
 import tree.RBT;
 import tree.Traversal;
@@ -15,11 +16,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 public class App extends JFrame {
 	private static final long BLINKER_TIME = 800;
 
-	private final BST<NumberOrString> bst;
+	private AbstractBST<NumberOrString, ?> bst;
 	private String input = "";
 	private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
@@ -35,7 +37,7 @@ public class App extends JFrame {
 	};
 	private int currStyle = 3;
 
-	public App (BST<NumberOrString> bst) {
+	public App (AbstractBST<NumberOrString, ?> bst) {
 		this.bst = bst;
 
 		setTitle("Graphics BST Lab");
@@ -224,6 +226,28 @@ public class App extends JFrame {
 				}
 				else
 					Log.err("Invalid parameter to query: Must be one of numLeaves, numLevels, height, width, diameter, size, levelWidths, isFull, largest, smallest");
+			}
+			case "intersect" -> {
+				List<NumberOrString> values = new ArrayList<>();
+				while (scan.hasNext()) {
+					NumberOrString v;
+
+					if (scan.hasNextInt()) {
+						v = new NumberOrString(scan.nextInt());
+					} else if (scan.hasNextDouble()) {
+						v = new NumberOrString(scan.nextDouble());
+					} else if ((v = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX))) != null) {
+
+					} else {
+						Log.err("Bad input: \"" + scan.next() + "\" is not an int, double, or string.");
+						break;
+					}
+
+					values.add(v);
+				}
+
+				List<NumberOrString> intersection = new ArrayList<>(bst.intersection(values));
+				Log.output(intersection.toString());
 			}
 			default -> Log.err("Unknown command \"" + command + "\". Type \"help\" to get a list of the commands");
 		}

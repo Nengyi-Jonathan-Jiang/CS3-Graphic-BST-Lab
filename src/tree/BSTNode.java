@@ -1,5 +1,8 @@
 package tree;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 public class BSTNode<T extends Comparable<T>> {
 	protected BSTNode<T> left = null, right = null, parent = null;
 	protected T value;
@@ -96,8 +99,8 @@ public class BSTNode<T extends Comparable<T>> {
 	 * @param value The value to insert as the left child of this node
 	 * @return The newly created node
 	 */
-	public BSTNode<T> insertLeft (T value) {
-		var res = new BSTNode<>(value);
+	public BSTNode<T> insertLeft (Supplier<BSTNode<T>> supplier) {
+		var res = supplier.get();
 		setLeftChild(res);
 		return res;
 	}
@@ -106,8 +109,8 @@ public class BSTNode<T extends Comparable<T>> {
 	 * @param value The value to insert as the right child of this node
 	 * @return The newly created node
 	 */
-	public BSTNode<T> insertRight (T value) {
-		var res = new BSTNode<>(value);
+	public BSTNode<T> insertRight (Supplier<BSTNode<T>> supplier) {
+		var res = supplier.get();
 		setRightChild(res);
 		return res;
 	}

@@ -3,14 +3,14 @@ package tree;
 import java.util.*;
 
 public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> {
-	protected final BST<T> tree;
+	protected final AbstractBST<T, ?> tree;
 
-	protected Traversal (BST<T> tree) {
+	protected Traversal (AbstractBST<T, ?> tree) {
 		this.tree = tree;
 	}
 
 	public static class PreOrder<T extends Comparable<T>> extends Traversal<T> {
-		public PreOrder (BST<T> tree) {
+		public PreOrder (AbstractBST<T, ?> tree) {
 			super(tree);
 		}
 
@@ -40,7 +40,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 	}
 
 	public static class PostOrder<T extends Comparable<T>> extends Traversal<T> {
-		public PostOrder (BST<T> tree) {
+		public PostOrder (AbstractBST<T, ?> tree) {
 			super(tree);
 		}
 
@@ -74,7 +74,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 
 	public static class InOrder<T extends Comparable<T>> extends Traversal<T> {
 
-		public InOrder (BST<T> tree) {
+		public InOrder (AbstractBST<T, ?> tree) {
 			super(tree);
 		}
 
@@ -103,7 +103,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 
 	public static class ReverseOrder<T extends Comparable<T>> extends Traversal<T> {
 
-		public ReverseOrder (BST<T> tree) {
+		public ReverseOrder (AbstractBST<T, ?> tree) {
 			super(tree);
 		}
 
@@ -132,7 +132,7 @@ public abstract class Traversal<T extends Comparable<T>> implements Iterable<T> 
 
 	public static class LevelOrder<T extends Comparable<T>> extends Traversal<T> {
 
-		public LevelOrder (BST<T> tree) {
+		public LevelOrder (AbstractBST<T, ?> tree) {
 			super(tree);
 		}
 

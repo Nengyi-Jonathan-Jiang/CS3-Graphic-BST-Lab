@@ -36,13 +36,12 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     /**
-     * @param _parent The root node to insert under
+     * @param parent The root node to insert under
      * @param value   The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
     @Override
-    protected boolean add(BSTNode<T> _parent, T value) {
-        var parent = (RBTNode<T>) _parent;
+    protected boolean add(RBTNode<T> parent, T value) {
 
         // Color swap if necessary
         if (RBTNode.isRed(parent.getLeftChild()) && RBTNode.isRed(parent.getRightChild())) {
@@ -119,8 +118,7 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     @Override
-    protected void deleteSimple(BSTNode<T> _target) {
-        var target = (RBTNode<T>) _target;
+    protected void deleteSimple(RBTNode<T> target) {
         var node = target.hasLeftChild() ? target.getLeftChild() : target.getRightChild();
 
         if (RBTNode.isRed(target) || RBTNode.isRed(node)) {
