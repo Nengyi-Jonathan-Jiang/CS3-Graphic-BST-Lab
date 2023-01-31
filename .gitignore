@@ -1,2 +1,5 @@
 # Project exclude paths
 /out/
+/.idea/codeStyles/codeStyleConfig.xml
+/jar/Graphic BST Lab.jar
+/jar/META-INF/MANIFEST.MF
