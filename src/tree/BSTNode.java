@@ -96,7 +96,7 @@ public class BSTNode<T extends Comparable<T>> {
 	}
 
 	/**
-	 * @param value The value to insert as the left child of this node
+	 * @param supplier A function that returns the node to be inserted.
 	 * @return The newly created node
 	 */
 	public BSTNode<T> insertLeft (Supplier<BSTNode<T>> supplier) {
@@ -106,7 +106,7 @@ public class BSTNode<T extends Comparable<T>> {
 	}
 
 	/**
-	 * @param value The value to insert as the right child of this node
+	 * @param supplier A function that returns the node to be inserted.
 	 * @return The newly created node
 	 */
 	public BSTNode<T> insertRight (Supplier<BSTNode<T>> supplier) {
