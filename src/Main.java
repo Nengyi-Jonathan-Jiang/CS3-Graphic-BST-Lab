@@ -1,5 +1,5 @@
 import app.App;
-import tree.AVLT;
+import tree.AVLTree;
 import tree.BST;
 import tree.RBT;
 import util.ANSICode;
@@ -13,6 +13,6 @@ public class Main {
 		if(args.contains("--color"))
 			ANSICode.enable();
 
-		new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLT<>() : new BST<>());
+		new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLTree<>() : new BST<>());
 	}
 }

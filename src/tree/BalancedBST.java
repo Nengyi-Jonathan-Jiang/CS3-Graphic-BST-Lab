@@ -151,22 +151,27 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
 
     /**
      * Automatically performs the correct rotation based on x's role in the tree
+     *
+     * @return
      */
-    protected void rotate(Node p, Node x) {
+    protected Node rotate(Node p, Node x) {
+        Node res;
         if (p.isLeftChild() && (x == null || x.isLeftChild())) {
-            System.out.println("Performing Left-Left Rotation with parent = " + p.getValue());
-            LL_Rotation(p);
+            System.out.println("Performing Left-Left Rotation with parent = " + p);
+            res = LL_Rotation(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
-            System.out.println("Performing Left-Right Rotation with parent = " + p.getValue());
-            LR_Rotation(p);
+            System.out.println("Performing Left-Right Rotation with parent = " + p);
+            res = LR_Rotation(p);
         } else if (p.isRightChild() && (x == null || x.isRightChild())) {
-            System.out.println("Performing Right-Right Rotation with parent = " + p.getValue());
-            RR_Rotation(p);
+            System.out.println("Performing Right-Right Rotation with parent = " + p);
+            res = RR_Rotation(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
-            System.out.println("Performing Right-Left Rotation with parent = " + p.getValue());
-            RL_Rotation(p);
+            System.out.println("Performing Right-Left Rotation with parent = " + p);
+            res = RL_Rotation(p);
         } else throw new Error("This should never happen");
+
         printTreeToConsole();
+        return res;
     }
 
     /**
@@ -177,16 +182,16 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     protected Node restructure(Node p, Node x) {
         Node res;
         if (p.isLeftChild() && (x == null || x.isLeftChild())) {
-            System.out.println("Performing Left-Left Restructure with parent = " + p.getValue());
+            System.out.println("Performing Left-Left Restructure with parent = " + p);
             res = LL_Rotation(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
-            System.out.println("Performing Left-Right Restructure with parent = " + p.getValue());
+            System.out.println("Performing Left-Right Restructure with parent = " + p);
             res = LR_Rotation(p);
         } else if (p.isRightChild() && (x == null || x.isRightChild())) {
-            System.out.println("Performing Right-Right Restructure with parent = " + p.getValue());
+            System.out.println("Performing Right-Right Restructure with parent = " + p);
             res = RR_Rotation(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
-            System.out.println("Performing Right-Left Restructure with parent = " + p.getValue());
+            System.out.println("Performing Right-Left Restructure with parent = " + p);
             res = RL_Rotation(p);
         } else throw new Error("This should never happen");
 
@@ -218,7 +223,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
             if (parent.hasLeftChild()) {
                 add((Node) parent.getLeftChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as left child of " + parent.getValue());
+                System.out.println("Inserting " + value + " as left child of " + parent);
                 var n = constructNode(value);
                 parent.setLeftChild(n);
                 printTreeToConsole();
@@ -228,7 +233,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
             if (parent.hasRightChild()) {
                 add((Node) parent.getRightChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as right child of " + parent.getValue());
+                System.out.println("Inserting " + value + " as right child of " + parent);
                 var n = constructNode(value);
                 parent.setRightChild(n);
                 printTreeToConsole();

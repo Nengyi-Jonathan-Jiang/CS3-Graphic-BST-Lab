@@ -1,6 +1,7 @@
 package tree;
 
 import util.ANSICode;
+import util.Log;
 
 public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     /**
@@ -42,10 +43,9 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
      */
     @Override
     protected boolean add(RBTNode<T> parent, T value) {
-
         // Color swap if necessary
         if (RBTNode.isRed(parent.getLeftChild()) && RBTNode.isRed(parent.getRightChild())) {
-            System.out.println("Executing Color Swap with parent = " + parent.getValue());
+            Log.log("Executing Color Swap with parent = " + parent, Log.NO_DISPLAY);
             if(parent.isNotRoot()) parent.swapColor();
             RBTNode.swapColor(parent.getLeftChild());
             RBTNode.swapColor(parent.getRightChild());
@@ -85,8 +85,8 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
         var parent = sib.getParent();
 
         if (sib.getSibling() == null)
-            System.out.println("Fix double black null");
-        else System.out.println("Fix double black " + sib.getSibling().getValue());
+            Log.log("Fix double black null", Log.NO_DISPLAY);
+        else Log.log("Fix double black " + sib.getSibling(), Log.NO_DISPLAY);
 
         if (sib.isRed()) { // Red sibling
             if (sib.isLeftChild()) {
@@ -137,7 +137,7 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     protected void _printNode(BSTNode<T> node, int targetWidth) {
-        String s = node.getValue().toString();
+        String s = node.toString();
         int space = targetWidth - 3 - s.length();
         String l = " ".repeat(space / 2);
         String r = " ".repeat(space - space / 2);

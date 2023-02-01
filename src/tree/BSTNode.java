@@ -7,17 +7,7 @@ public class BSTNode<T extends Comparable<T>> {
 	protected BSTNode<T> left = null, right = null, parent = null;
 	protected T value;
 
-	public enum ChildType {
-		LEFT, RIGHT, ROOT
-	}
-
-	/**
-	 * @return One of {@link ChildType#LEFT}, {@link ChildType#RIGHT}, or {@link ChildType#ROOT} depending
-	 * on the role of this node in the tree
-	 */
-	public ChildType getChildType () {
-		return isLeftChild() ? ChildType.LEFT : isRightChild() ? ChildType.RIGHT : ChildType.ROOT;
-	}
+	public enum ChildType { LEFT, RIGHT, ROOT }
 
 	public BSTNode (T value) {
 		this.value = value;
@@ -29,14 +19,17 @@ public class BSTNode<T extends Comparable<T>> {
 		this.setRightChild(right);
 	}
 
-	@Override
-	public String toString () {
-		return toString(this);
+	/**
+	 * @return One of {@link ChildType#LEFT}, {@link ChildType#RIGHT}, or {@link ChildType#ROOT} depending
+	 * on the role of this node in the tree
+	 */
+	public ChildType getChildType () {
+		return isLeftChild() ? ChildType.LEFT : isRightChild() ? ChildType.RIGHT : ChildType.ROOT;
 	}
 
-	private static <T extends Comparable<T>> String toString (BSTNode<T> node) {
-		if (node == null) return "nil";
-		return "{ " + toString(node.getLeftChild()) + " " + node.value + " " + toString(node.getRightChild()) + " }";
+	@Override
+	public String toString () {
+		return value.toString();
 	}
 
 	public T getValue () {
@@ -103,11 +96,14 @@ public class BSTNode<T extends Comparable<T>> {
 		};
 	}
 
-	public boolean hasSibling () {
+	public final boolean hasSibling () {
 		return parent.getDegree() == 2;
 	}
 
-	public boolean isNotRoot () {
+	public final boolean isNotRoot () {
+		return hasParent();
+	}
+	public final boolean hasParent() {
 		return parent != null;
 	}
 

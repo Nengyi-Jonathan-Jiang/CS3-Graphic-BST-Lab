@@ -25,7 +25,7 @@ public abstract class TreeDrawer {
 	}
 
 	protected static int getRenderedSize(BSTNode<?> node){
-		return getRenderedStringSize(node.getValue().toString()).width + getNodePadding() * 4;
+		return getRenderedStringSize(node.toString()).width + getNodePadding() * 4;
 	}
 
 	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
@@ -66,7 +66,7 @@ public abstract class TreeDrawer {
 				var node = levels[h][i];
 
 				if (node != null) {
-					String text = node.getValue().toString();
+					String text = node.toString();
 					var d = getRenderedStringSize(text);
 					int X = x[h][i], Y = y[h][i];
 

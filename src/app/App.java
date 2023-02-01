@@ -72,13 +72,13 @@ public class App extends JFrame {
 		Scanner scan = new Scanner(System.in);
 		while (scan.hasNextLine()) {
 			String line = scan.nextLine();
-			Log.echoInput(">>> " + line, false);
+			Log.echoInput(">>> " + line, Log.NO_TERMINAL);
 			evaluateCommand(new Scanner(line));
 		}
 	}
 
 	private void evaluateCommand () {
-		Log.echoInput(">>> " + input, true);
+		Log.echoInput(">>> " + input);
 		evaluateCommand(input);
 		input = "";
 	}
@@ -277,7 +277,7 @@ public class App extends JFrame {
 		graphics.setFont(font);
 		graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, getHeight() - 20);
 
-		Log.forEach((int i, String message, float t, Log.LogLevel level) -> {
+		Log.forEachLogItem((int i, String message, float t, Log.LogLevel level) -> {
 			double opacity = 1 - Math.pow(t, 4);
 			Color color = level.gColor;
 			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int) (opacity * 255), 255), 0)));

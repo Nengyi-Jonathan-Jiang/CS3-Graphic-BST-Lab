@@ -8,34 +8,45 @@ public class Log {
 	private static final long fadeTime = 16000;
 	private static final int maxSize = 30;
 
-	private static void _addMessage (String message, LogLevel level) {
-		log.addFirst(new LogItem(message, level));
-		System.out.println(level.tColor + message + ANSICode.CLEAR);
+	public static final int NO_TERMINAL = 1, NO_DISPLAY = 2;
+
+	private static void _addMessage (String message, LogLevel level, int flags) {
+		if((flags & NO_DISPLAY) == 0)
+			log.addFirst(new LogItem(message, level));
+		if((flags & NO_TERMINAL) == 0)
+			System.out.println(level.tColor + message + ANSICode.CLEAR);
 	}
 
-	public static void err (String message) {
-		_addMessage(message, LogLevel.Error);
+	public static void err(String message) { err(message, 0); }
+	public static void err (String message, int flags) {
+		_addMessage(message, LogLevel.Error, flags);
 	}
 
-	public static void warn (String input) {
-		_addMessage(input, LogLevel.Echo);
+	public static void warn(String input) { warn(input, 0); }
+	public static void warn (String input, int flags) {
+		_addMessage(input, LogLevel.Echo, flags);
 	}
 
-	public static void log (String message) {
-		_addMessage(message, LogLevel.Normal);
+	public static void log(String message) { log(message, 0); }
+	public static void log (String message, int flags) {
+		_addMessage(message, LogLevel.Normal, flags);
 	}
 
-	public static void echoInput (String input, boolean logToTerminal) {
-		log.addFirst(new LogItem(input, LogLevel.Echo));
-		if (logToTerminal)
-			System.out.println(LogLevel.Echo.tColor + input + ANSICode.CLEAR);
+	public static void echoInput(String input){
+		echoInput(input, 0);
+	}
+	public static void echoInput (String input, int flags) {
+		_addMessage(input, LogLevel.Echo, flags);
 	}
 
-	public static void output (String output) {
-		_addMessage(output, LogLevel.Output);
+	public static void output(String output){
+		output(output, 0);
+	}
+	public static void output (String output, int flags) {
+		_addMessage(output, LogLevel.Output, flags);
 	}
 
-	public static void forEach (LogItemAction action) {
+	public static void forEachLogItem(LogItemAction action) {
 		long currentTime = System.currentTimeMillis();
 
 		while (log.size() > maxSize || !log.isEmpty() && currentTime >= log.peekLast().startTime + fadeTime) {
@@ -58,8 +69,7 @@ public class Log {
 		Echo(ANSICode.CLEAR, Color.BLACK),
 		Output(ANSICode.BLUE, Color.BLUE),
 		Error(ANSICode.RED, Color.RED),
-		Normal(ANSICode.BLUE, Color.BLUE),
-		Verbose(ANSICode.BLUE, Color.BLUE);
+		Normal(ANSICode.GREEN, Color.BLUE);
 
 		public final ANSICode tColor;
 		public final Color gColor;

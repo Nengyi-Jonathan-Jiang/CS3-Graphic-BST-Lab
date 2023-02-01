@@ -1,17 +1,19 @@
 package tree;
 
-public class AVLT<T extends Comparable<T>> extends BalancedBST<T, AVLNode<T>> {
+public class AVLTree<T extends Comparable<T>> extends BalancedBST<T, AVLNode<T>> {
     @Override
     protected void fixInsert (AVLNode<T> node) {
         // Do not fix root or child of root, no need
-        if(!(node.isNotRoot() && node.getParent().isNotRoot())) return;
+        if(!(node.hasParent() && node.getParent().isNotRoot())) return;
 
         int bf = node.getParent().getParent().getBalanceFactor();
 
+        var newParent = node.getParent();
+
         if(Math.abs(bf) > 1){
-            rotate(node.getParent(), node);
-            fixInsert(node.getParent());
+            newParent = rotate(node.getParent(), node);
         }
+        fixInsert(newParent);
     }
     
     @Override

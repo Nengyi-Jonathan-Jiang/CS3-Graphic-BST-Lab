@@ -23,4 +23,9 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     public AVLNode<T> getParent () {
         return (AVLNode<T>) super.parent;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + (getBalanceFactor() == 1 ? " (+1)" : getBalanceFactor() == -1 ? " (-1)" : " (+0)");
+    }
 }

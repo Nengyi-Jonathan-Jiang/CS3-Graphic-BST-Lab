@@ -36,7 +36,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
             if (parent.hasLeftChild()) {
                 add((Node) parent.getLeftChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as left child of " + parent.getValue());
+                System.out.println("Inserting " + value + " as left child of " + parent);
                 parent.setLeftChild(constructNode(value));
                 printTreeToConsole();
             }
@@ -44,7 +44,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
             if (parent.hasRightChild()) {
                 add((Node) parent.getRightChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as right child of " + parent.getValue());
+                System.out.println("Inserting " + value + " as right child of " + parent);
                 parent.setRightChild(constructNode(value));
                 printTreeToConsole();
             }
@@ -404,7 +404,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
                         }
                     }
                 } else {
-                    int w = levels[r][i].getValue().toString().length() + 3;
+                    int w = levels[r][i].toString().length() + 3;
                     int width = r == height - 1
                             ? w
                             : Math.max(w, widths[r + 1][i * 2] + widths[r + 1][i * 2 + 1]);
@@ -438,7 +438,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         }
     }
     protected void _printNode(BSTNode<T> node, int targetWidth){
-        String s = node.getValue().toString();
+        String s = node.toString();
         int space = targetWidth - 3 - s.length();
         String l = " ".repeat(space / 2);
         String r = " ".repeat(space - space / 2);

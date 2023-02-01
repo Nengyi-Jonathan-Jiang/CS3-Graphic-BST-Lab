@@ -25,18 +25,24 @@ public class NumberOrString implements Comparable<NumberOrString> {
 	public int compareTo (NumberOrString o) {
 		return !isString() && !o.isString()
 		       ? Double.compare(getDoubleVal(), o.getDoubleVal())
-		       : toString().equals(o.toString())
+		       : getStringVal().equals(o.getStringVal())
 		         ? t.ordinal() - o.t.ordinal()
-		         : (toString()).compareTo(o.toString());
+		         : (getStringVal()).compareTo(o.getStringVal());
 	}
 
 	@Override
 	public String toString () {
-		return value.toString();
+		return t == type.S ? "\"" + value.toString() + "\"" : value.toString();
 	}
 
 	public double getDoubleVal () {
 		return t == type.I ? Double.valueOf((int) value) : (Double) value;
+	}
+
+	public String getStringVal() { return value.toString(); }
+
+	public boolean isNumber() {
+		return t != type.S;
 	}
 
 	public boolean isString () {
