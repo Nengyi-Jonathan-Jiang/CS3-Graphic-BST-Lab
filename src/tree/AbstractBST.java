@@ -1,10 +1,8 @@
 package tree;
 
-import org.jetbrains.annotations.NotNull;
 import util.ANSICode;
 import java.util.*;
 
-// Hehe this is literally Java TreeSet but with BSTs and exposed TreeNodes
 public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode<T>> implements Collection<T> {
     protected Node root = null;
 
@@ -170,10 +168,10 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return A new bst.BST containing the elements common to this tree and the given values
      */
     @Override
-    public final boolean retainAll (@NotNull Collection<?> c) {
+    public final boolean retainAll (Collection<?> c) {
         var temp = intersection(c);
         boolean res = !new ArrayList<>(this).equals(new ArrayList<>(temp)); // This operation should be O(N) I think
-        root = temp.getRoot();  // Hehe just copy the temp tree to this tree
+        root = temp.getRoot();  // Just copy the temp tree to this tree
         return res;
     }
 
@@ -341,25 +339,27 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     }
 
     public final T[][] getLevels () {
-        if (root == null) return (T[][]) new Comparable[][] { };
+        return (T[][]) Arrays.stream(getNodesAtLevels())
+                .map(Arrays::stream)
+                .map(i -> i.map(BSTNode::getValue).toArray(Comparable[]::new))
+                .toArray(Comparable[][]::new);
+    }
+
+    public final BSTNode<T>[][] getNodesAtLevels() {
+        if (root == null) return (BSTNode<T>[][]) new BSTNode[][] { };
 
         final int levels = countLevels();
-        final T[][] res = (T[][]) new Comparable[levels][];
-        final BSTNode<T>[][] nodes = new BSTNode[levels][];
-        nodes[0] = new BSTNode[] { root };
-        res[0] = (T[]) new Comparable[] { root.getValue() };
+        final BSTNode<T>[][] res = new BSTNode[levels][];
+        res[0] = new BSTNode[] { root };
 
         for (int h = 1; h < levels; h++) {
             int size = 1 << h;
-            nodes[h] = new BSTNode[size];
-            res[h] = (T[]) new Comparable[size];
+            res[h] = new BSTNode[size];
             for (int i = 0; i * 2 < size; i++) {
-                var n = nodes[h - 1][i];
+                var n = res[h - 1][i];
                 if (n != null) {
-                    var l = nodes[h][i * 2] = n.getLeftChild();
-                    var r = nodes[h][i * 2 + 1] = n.getRightChild();
-                    if (l != null) res[h][i * 2] = l.getValue();
-                    if (r != null) res[h][i * 2 + 1] = r.getValue();
+                    res[h][i * 2] = n.getLeftChild();
+                    res[h][i * 2 + 1] = n.getRightChild();
                 }
             }
         }
@@ -380,19 +380,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         }
 
         final int height = countLevels();
-        final BSTNode<T>[][] levels = new BSTNode[height][];
-        levels[0] = new BSTNode[] { root };
-        for (int h = 1; h < height; h++) {
-            int size = 1 << h;
-            levels[h] = new BSTNode[size];
-            for (int i = 0; i * 2 < size; i++) {
-                var n = levels[h - 1][i];
-                if (n != null) {
-                    levels[h][i * 2] = n.getLeftChild();
-                    levels[h][i * 2 + 1] = n.getRightChild();
-                }
-            }
-        }
+        final BSTNode<T>[][] levels = getNodesAtLevels();
 
         final int[][] widths = new int[height][];
         for (int r = height - 1; r >= 0; r--) {
