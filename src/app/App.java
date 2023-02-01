@@ -2,8 +2,6 @@ package app;
 
 import app.treedrawer.*;
 import tree.AbstractBST;
-import tree.BST;
-import tree.RBT;
 import tree.Traversal;
 import util.FontLoader;
 import util.Log;
@@ -21,7 +19,7 @@ import java.util.List;
 public class App extends JFrame {
 	private static final long BLINKER_TIME = 800;
 
-	private AbstractBST<NumberOrString, ?> bst;
+	private final AbstractBST<NumberOrString, ?> bst;
 	private String input = "";
 	private static final Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
 
@@ -112,9 +110,8 @@ public class App extends JFrame {
 					}
 
 					Log.log("Adding " + vs + " to the tree");
-					bst.print();
+					bst.printTreeToConsole();
 					bst.add(v);
-					bst.print();
 					Log.log("Added " + vs + " to the tree");
 				}
 			}
@@ -157,9 +154,9 @@ public class App extends JFrame {
 						Log.warn(val + " is not in the tree");
 					} else {
 						Log.log("Deleting " + val + " from the tree");
-						bst.print();
+						bst.printTreeToConsole();
 						bst.remove(val);
-						bst.print();
+						bst.printTreeToConsole();
 						Log.log("Deleted " + val + " from the tree");
 					}
 				}

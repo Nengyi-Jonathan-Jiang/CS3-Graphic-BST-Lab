@@ -45,9 +45,11 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
 
         // Color swap if necessary
         if (RBTNode.isRed(parent.getLeftChild()) && RBTNode.isRed(parent.getRightChild())) {
-            parent.swapColor();
+            System.out.println("Executing Color Swap with parent = " + parent.getValue());
+            if(parent.isNotRoot()) parent.swapColor();
             RBTNode.swapColor(parent.getLeftChild());
             RBTNode.swapColor(parent.getRightChild());
+            printTreeToConsole();
             fixInsert(parent);
         }
 
@@ -62,10 +64,10 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     protected void fixInsert (RBTNode<T> x) {
         // Check for Red violation
         if (RBTNode.isRed(x.getParent()))   // Do the corresponding rotation
-            rotate(x);
+            rotate(x.getParent(), x);
 
         // Make root black
-        ((RBTNode<?>) root).makeBlack();
+        root.makeBlack();
     }
 
     /**
@@ -88,21 +90,23 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
 
         if (sib.isRed()) { // Red sibling
             if (sib.isLeftChild()) {
-                LL_Rotation(sib);
+                rotate(sib, null);
                 fixDoubleBlack(parent.getLeftChild());
             } else {
-                RR_Rotation(sib);
+                rotate(sib, null);
                 fixDoubleBlack(parent.getRightChild());
             }
         }
         // Black sibling, has red child
         else if (RBTNode.isRed(sib.getLeftChild()) || RBTNode.isRed(sib.getRightChild())) {
             var origColor = RBTNode.getColor(sib.getParent());
-            var p = (RBTNode<T>) rotate(
-                    sib.isLeftChild() ?    // If sib is left and red on left do left else right
-                            RBTNode.isRed(sib.getLeftChild()) ? sib.getLeftChild() : sib.getRightChild()
-                            :                   // Else if sib is right and red on right do right else left
-                            RBTNode.isRed(sib.getRightChild()) ? sib.getRightChild() : sib.getLeftChild()
+            var p = (RBTNode<T>) restructure(
+                    sib,
+                    sib.isLeftChild()
+                            // If sib is left and red on left, do left, else right
+                            ? RBTNode.isRed(sib.getLeftChild()) ? sib.getLeftChild() : sib.getRightChild()
+                            // If sib is right and red on right, do right, else left
+                            : RBTNode.isRed(sib.getRightChild()) ? sib.getRightChild() : sib.getLeftChild()
             );
 
             RBTNode.setColor(p, origColor);
@@ -111,9 +115,10 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
             RBTNode.makeBlack(p.getRightChild());
         } else { // Black sibling, no red child
             sib.makeRed();
-            if (parent.isNotRoot() && RBTNode.isBlack(parent)) {
+            if (parent.isNotRoot() && RBTNode.isBlack(parent))
                 fixDoubleBlack(sib.getParent().getSibling());
-            } else RBTNode.makeBlack(parent);
+            else
+                RBTNode.makeBlack(parent);
         }
     }
 
@@ -132,13 +137,13 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     protected void _printNode(BSTNode<T> node, int targetWidth) {
-        System.out.print("[" + (RBTNode.isRed((RBTNode<T>) node) ? ANSICode.RED : ANSICode.PURPLE ) + ANSICode.BOLD);
-
         String s = node.getValue().toString();
-        int length = s.length();
-        int lp = (targetWidth - 3 - length) / 2;
-        int rp = targetWidth - 3 - lp - length;
-        System.out.print(" ".repeat(lp) + s + " ".repeat(rp) + ANSICode.CLEAR + "] ");
+        int space = targetWidth - 3 - s.length();
+        String l = " ".repeat(space / 2);
+        String r = " ".repeat(space - space / 2);
+        var color = RBTNode.isRed((RBTNode<T>) node) ? ANSICode.RED : ANSICode.PURPLE;
+
+        System.out.print("[" + color + ANSICode.BOLD + l + s + r + ANSICode.CLEAR + "] ");
     }
 
     @Override

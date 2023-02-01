@@ -95,26 +95,6 @@ public class BSTNode<T extends Comparable<T>> {
 		this.parent = parent;
 	}
 
-	/**
-	 * @param supplier A function that returns the node to be inserted.
-	 * @return The newly created node
-	 */
-	public BSTNode<T> insertLeft (Supplier<BSTNode<T>> supplier) {
-		var res = supplier.get();
-		setLeftChild(res);
-		return res;
-	}
-
-	/**
-	 * @param supplier A function that returns the node to be inserted.
-	 * @return The newly created node
-	 */
-	public BSTNode<T> insertRight (Supplier<BSTNode<T>> supplier) {
-		var res = supplier.get();
-		setRightChild(res);
-		return res;
-	}
-
 	public BSTNode<T> getSibling () {
 		return switch (getChildType()) {
 			case LEFT -> parent.getRightChild();

@@ -25,6 +25,36 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     }
 
     /**
+     * @param parent The root node to insert under
+     * @param value  The value to insert into the tree
+     * @return whether the tree changed as a result of this call
+     */
+    protected boolean add (Node parent, T value) {
+        int compare = value.compareTo(parent.getValue());
+
+        if (compare < 0) {
+            if (parent.hasLeftChild()) {
+                add((Node) parent.getLeftChild(), value);
+            } else {
+                System.out.println("Inserting " + value + " as left child of " + parent.getValue());
+                parent.setLeftChild(constructNode(value));
+                printTreeToConsole();
+            }
+        } else {
+            if (parent.hasRightChild()) {
+                add((Node) parent.getRightChild(), value);
+            } else {
+                System.out.println("Inserting " + value + " as right child of " + parent.getValue());
+                parent.setRightChild(constructNode(value));
+                printTreeToConsole();
+            }
+        }
+        //else return false; // else: Node already in tree, do nothing :)
+
+        return true;
+    }
+
+    /**
      * @param value The value to search for
      * @return whether the value exists in the tree
      * @throws ClassCastException when value is not a {@link Comparable}
@@ -49,7 +79,9 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      */
     public boolean add (T value) {
         if (root == null) {
+            System.out.println("Inserting " + value + " as root");
             root = constructNode(value);
+            printTreeToConsole();
             return true;
         } else return add(root, value);
     }
@@ -60,28 +92,6 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      */
     public final boolean addAll (Collection<? extends T> values) {
         return values.stream().map(this::add).toList().contains(true);
-    }
-
-    /**
-     * @param parent The root node to insert under
-     * @param value  The value to insert into the tree
-     * @return whether the tree changed as a result of this call
-     */
-    protected boolean add (Node parent, T value) {
-        int compare = value.compareTo(parent.getValue());
-
-        if (compare < 0) {
-            if (parent.hasLeftChild())
-                add((Node) parent.getLeftChild(), value);
-            else parent.setLeftChild(new BSTNode<>(value));
-        } else {
-            if (parent.hasRightChild())
-                add((Node) parent.getRightChild(), value);
-            else parent.setRightChild(new BSTNode<>(value));
-        }
-        //else return false; // else: Node already in tree, do nothing :)
-
-        return true;
     }
 
     /**
@@ -252,7 +262,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     public Object[] toArray () {
         // IntelliJ suggests that I replace stream().toArray() with this.toArray()
         // Wow, that would definitely work!
-        // Yeah, I wanna call toArray() in the toArray() method!
+        // Yeah, I want to call toArray() in the toArray() method!
         // No.
         // Just no.
 
@@ -373,9 +383,9 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     }
 
 
-    public void print() {
+    public void printTreeToConsole() {
         if (isEmpty()) {
-            System.out.println("Empty Tree");
+            System.out.println("[Empty Tree]");
             return;
         }
 
@@ -428,12 +438,11 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         }
     }
     protected void _printNode(BSTNode<T> node, int targetWidth){
-        System.out.print("[" + ANSICode.BOLD);
-
         String s = node.getValue().toString();
-        int length = s.length();
-        int lp = (targetWidth - 3 - length) / 2;
-        int rp = targetWidth - 3 - lp - length;
-        System.out.print(" ".repeat(lp) + s + " ".repeat(rp) + ANSICode.CLEAR + "] ");
+        int space = targetWidth - 3 - s.length();
+        String l = " ".repeat(space / 2);
+        String r = " ".repeat(space - space / 2);
+
+        System.out.print("[" + ANSICode.BOLD + l + s + r + ANSICode.CLEAR + "] ");
     }
 }

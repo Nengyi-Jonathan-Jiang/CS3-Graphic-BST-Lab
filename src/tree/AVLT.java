@@ -9,7 +9,7 @@ public class AVLT<T extends Comparable<T>> extends BalancedBST<T, AVLNode<T>> {
         int bf = node.getParent().getParent().getBalanceFactor();
 
         if(Math.abs(bf) > 1){
-            rotate(node);
+            rotate(node.getParent(), node);
             fixInsert(node.getParent());
         }
     }

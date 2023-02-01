@@ -100,8 +100,6 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @return The new grandparent
      */
     protected Node LL_Rotation(Node p) {
-        System.out.println("Performing Left-Left Rotation");
-
         LL_Rotation(p, (Node) p.getParent());
 
         return p;
@@ -114,8 +112,6 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @return The new grandparent
      */
     protected Node RR_Rotation(Node p) {
-        System.out.println("Performing Right-Right Rotation");
-
         RR_Rotation(p, (Node) p.getParent());
 
         return p;
@@ -130,8 +126,6 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     protected Node LR_Rotation(Node p) {
         var x = (Node) p.getRightChild();
         var g = (Node) p.getParent();
-
-        System.out.println("Performing Left-Right Rotation");
 
         RR_Rotation(x, p);
         LL_Rotation(x, g);
@@ -149,8 +143,6 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
         var x = (Node) p.getLeftChild();
         var g = (Node) p.getParent();
 
-        System.out.println("Performing Right-Left rotation");
-
         LL_Rotation(x, p);
         RR_Rotation(x, g);
 
@@ -159,36 +151,58 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
 
     /**
      * Automatically performs the correct rotation based on x's role in the tree
+     */
+    protected void rotate(Node p, Node x) {
+        if (p.isLeftChild() && (x == null || x.isLeftChild())) {
+            System.out.println("Performing Left-Left Rotation with parent = " + p.getValue());
+            LL_Rotation(p);
+        } else if (p.isLeftChild() && x.isRightChild()) {
+            System.out.println("Performing Left-Right Rotation with parent = " + p.getValue());
+            LR_Rotation(p);
+        } else if (p.isRightChild() && (x == null || x.isRightChild())) {
+            System.out.println("Performing Right-Right Rotation with parent = " + p.getValue());
+            RR_Rotation(p);
+        } else if (p.isRightChild() && x.isLeftChild()) {
+            System.out.println("Performing Right-Left Rotation with parent = " + p.getValue());
+            RL_Rotation(p);
+        } else throw new Error("This should never happen");
+        printTreeToConsole();
+    }
+
+    /**
+     * Automatically performs the correct restructure based on x's role in the tree
      *
      * @return The new grandparent
      */
-    protected Node rotate(Node x) {
-        var p = (Node) x.getParent();
+    protected Node restructure(Node p, Node x) {
+        Node res;
+        if (p.isLeftChild() && (x == null || x.isLeftChild())) {
+            System.out.println("Performing Left-Left Restructure with parent = " + p.getValue());
+            res = LL_Rotation(p);
+        } else if (p.isLeftChild() && x.isRightChild()) {
+            System.out.println("Performing Left-Right Restructure with parent = " + p.getValue());
+            res = LR_Rotation(p);
+        } else if (p.isRightChild() && (x == null || x.isRightChild())) {
+            System.out.println("Performing Right-Right Restructure with parent = " + p.getValue());
+            res = RR_Rotation(p);
+        } else if (p.isRightChild() && x.isLeftChild()) {
+            System.out.println("Performing Right-Left Restructure with parent = " + p.getValue());
+            res = RL_Rotation(p);
+        } else throw new Error("This should never happen");
 
-        if (p.isLeftChild() && x.isLeftChild())
-            return LL_Rotation(p);
-        else if (p.isLeftChild() && x.isRightChild())
-            return LR_Rotation(p);
-        else if (p.isRightChild() && x.isLeftChild())
-            return RL_Rotation(p);
-        else if (p.isRightChild() && x.isRightChild())
-            return RR_Rotation(p);
-        else
-            throw new Error("This should never happen");
+        printTreeToConsole();
+        return res;
     }
 
-
-    /**
-     * @param value The value to insert into the tree
-     * @return whether the tree changed as a result of this call
-     */
     @Override
     public boolean add(T value) {
         if (root == null) {
-            root = (Node) constructNode(value).makeRoot();
+            System.out.println("Inserting " + value + " as root");
+            root = constructNode(value);
+            printTreeToConsole();
+            fixInsert(root);
             return true;
-        }
-        return add(root, value);
+        } else return add(root, value);
     }
 
     /**
@@ -200,16 +214,28 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     protected boolean add(Node parent, T value) {
         int compare = value.compareTo(parent.getValue());
 
-        if (compare < 0)
-            if (parent.hasLeftChild())
-                return add((Node) parent.getLeftChild(), value);
-            else
-                fixInsert((Node) parent.insertLeft(() -> new RBTNode<>(value)));
-        else
-            if (parent.hasRightChild())
-                return add((Node) parent.getRightChild(), value);
-            else
-                fixInsert((Node) parent.insertRight(() -> new RBTNode<>(value)));
+        if (compare < 0) {
+            if (parent.hasLeftChild()) {
+                add((Node) parent.getLeftChild(), value);
+            } else {
+                System.out.println("Inserting " + value + " as left child of " + parent.getValue());
+                var n = constructNode(value);
+                parent.setLeftChild(n);
+                printTreeToConsole();
+                fixInsert(n);
+            }
+        } else {
+            if (parent.hasRightChild()) {
+                add((Node) parent.getRightChild(), value);
+            } else {
+                System.out.println("Inserting " + value + " as right child of " + parent.getValue());
+                var n = constructNode(value);
+                parent.setRightChild(n);
+                printTreeToConsole();
+                fixInsert(n);
+            }
+        }
+
         return true;
     }
 
