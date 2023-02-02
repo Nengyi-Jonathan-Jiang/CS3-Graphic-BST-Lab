@@ -1,6 +1,8 @@
 package tree;
 
 import util.ANSICode;
+import util.Log;
+
 import java.util.*;
 
 public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode<T>> implements Collection<T> {
@@ -142,6 +144,12 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     }
 
     protected void deleteSimple (Node target) {
+        Log.log("Removing " + target + (
+            target.hasParent()
+                ? " (parent is " + target.getParent() + ")"
+                : " (root)"
+        ));
+        printTreeToConsole();
         var node = target.hasLeftChild() ? target.getLeftChild() : target.hasRightChild() ? target.getRightChild() : null;
         switch (target.getChildType()) {
             case LEFT -> target.getParent().setLeftChild(node);

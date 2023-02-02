@@ -1,35 +1,34 @@
 package tree;
 
-import util.Log;
-
 public class AVLTree<T extends Comparable<T>> extends BalancedBST<T, AVLNode<T>> {
     @Override
     protected void fixInsert (AVLNode<T> node) {
-        // Do not fix root or child of root, no need
-        if(!(node.hasParent() && node.getParent().isNotRoot())) return;
-
-        int bf = node.getParent().getParent().getBalanceFactor();
-
-        var newParent = node.getParent();
-
-        if(Math.abs(bf) > 1){
-            newParent = rotate(node);
-        }
-        fixInsert(newParent);
+        rebalance(node);
     }
 
     private void rebalance(AVLNode<T> g){
-        if(g.getBalanceFactor() == -2){
-            var p = g.getRightChild();
-            if(p.getBalanceFactor() <= 0){
-                rotate(p.getRightChild());
+        AVLNode<T> res;
+
+        if(g.isUnbalanced()){
+            var p = g.isLeftHeavy() ? g.getLeftChild() : g.getRightChild();
+            if(p.isLeftHeavy()){
+                res = rotate(p.getLeftChild());
+            }
+            else if(p.isRightHeavy()){
+                res = rotate(p.getRightChild());
+            }
+            else {  // P balanced
+                res = OO_Rotate(p);
             }
         }
+        else res = g;
+
+        if(res.isNotRoot()) rebalance(res.getParent());
     }
 
     @Override
     protected void deleteSimple(AVLNode<T> target) {
-        var node = target.hasLeftChild() ? target.getLeftChild() : target.hasRightChild() ? target.getRightChild() : target.getSibling();
+        var node = target.getParent();
         super.deleteSimple(target);
         fixInsert(node);
     }

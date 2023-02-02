@@ -9,6 +9,20 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
         return getHeight(left) - getHeight(right);
     }
 
+    public boolean isUnbalanced(){
+        return Math.abs(getBalanceFactor()) > 1;
+    }
+
+    public boolean isLeftHeavy(){
+        return getBalanceFactor() > 0;
+    }
+    public boolean isRightHeavy(){
+        return getBalanceFactor() < 1;
+    }
+    public boolean isPerfectlyBalanced(){
+        return getBalanceFactor() == 0;
+    }
+
     @Override
     public AVLNode<T> getLeftChild () {
         return (AVLNode<T>) super.getLeftChild();
