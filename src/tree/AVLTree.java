@@ -13,13 +13,18 @@ public class AVLTree<T extends Comparable<T>> extends BalancedBST<T, AVLNode<T>>
         var newParent = node.getParent();
 
         if(Math.abs(bf) > 1){
-            newParent = rotate(node.getParent(), node);
+            newParent = rotate(node);
         }
         fixInsert(newParent);
     }
 
-    private void rebalance(AVLNode<T> node){
-
+    private void rebalance(AVLNode<T> g){
+        if(g.getBalanceFactor() == -2){
+            var p = g.getRightChild();
+            if(p.getBalanceFactor() <= 0){
+                rotate(p.getRightChild());
+            }
+        }
     }
 
     @Override

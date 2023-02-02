@@ -11,9 +11,9 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
      * @param g g, the grandparent of x
      */
     @Override
-    protected void LL_Rotation(RBTNode<T> p, RBTNode<T> g) {
+    protected void LL_Rotate(RBTNode<T> p, RBTNode<T> g) {
         // Call the super rotate method
-        super.LL_Rotation(p, g);
+        super.LL_Rotate(p, g);
 
         // Recolor the nodes
         g.makeRed();
@@ -27,9 +27,9 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
      * @param g g, the grandparent of x
      */
     @Override
-    protected void RR_Rotation(RBTNode<T> p, RBTNode<T> g) {
+    protected void RR_Rotate(RBTNode<T> p, RBTNode<T> g) {
         // Call the super rotate method
-        super.RR_Rotation(p, g);
+        super.RR_Rotate(p, g);
 
         // Recolor the nodes
         g.makeRed();
@@ -64,7 +64,7 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     protected void fixInsert (RBTNode<T> x) {
         // Check for Red violation
         if (RBTNode.isRed(x.getParent()))   // Do the corresponding rotation
-            rotate(x.getParent(), x);
+            rotate(x);
 
         // Make root black
         root.makeBlack();
@@ -90,18 +90,17 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
 
         if (sib.isRed()) { // Red sibling
             if (sib.isLeftChild()) {
-                rotate(sib, null);
-                fixDoubleBlack(parent.getLeftChild());
+                OO_Rotate(sib);
+                fixDoubleBlack(parent.getLeftChild());  // X is parent.getRightChild
             } else {
-                rotate(sib, null);
-                fixDoubleBlack(parent.getRightChild());
+                OO_Rotate(sib);
+                fixDoubleBlack(parent.getRightChild());  // X is parent.getRightChild
             }
         }
         // Black sibling, has red child
         else if (RBTNode.isRed(sib.getLeftChild()) || RBTNode.isRed(sib.getRightChild())) {
             var origColor = RBTNode.getColor(sib.getParent());
             var p = (RBTNode<T>) restructure(
-                    sib,
                     sib.isLeftChild()
                             // If sib is left and red on left, do left, else right
                             ? RBTNode.isRed(sib.getLeftChild()) ? sib.getLeftChild() : sib.getRightChild()

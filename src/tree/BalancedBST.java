@@ -7,7 +7,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @param g g, the grandparent of x
      */
-    protected void LL_Rotation(Node p, Node g) {
+    protected void LL_Rotate(Node p, Node g) {
 		/*-Subtree looks like:----
 		 *    ?
 		 *    g
@@ -53,7 +53,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @param g g, the grandparent of x
      */
-    protected void RR_Rotation(Node p, Node g) {
+    protected void RR_Rotate(Node p, Node g) {
 		/*-Subtree looks like:----
 		 *    ?
 		 *    g
@@ -99,9 +99,8 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @return The new grandparent
      */
-    protected Node LL_Rotation(Node p) {
-        LL_Rotation(p, (Node) p.getParent());
-
+    protected Node LL_Rotate(Node p) {
+        LL_Rotate(p, (Node) p.getParent());
         return p;
     }
 
@@ -111,9 +110,8 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @return The new grandparent
      */
-    protected Node RR_Rotation(Node p) {
-        RR_Rotation(p, (Node) p.getParent());
-
+    protected Node RR_Rotate(Node p) {
+        RR_Rotate(p, (Node) p.getParent());
         return p;
     }
 
@@ -123,12 +121,12 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @return The new grandparent
      */
-    protected Node LR_Rotation(Node p) {
+    protected Node LR_Rotate(Node p) {
         var x = (Node) p.getRightChild();
         var g = (Node) p.getParent();
 
-        RR_Rotation(x, p);
-        LL_Rotation(x, g);
+        RR_Rotate(x, p);
+        LL_Rotate(x, g);
 
         return x;
     }
@@ -139,35 +137,53 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      * @param p p, the parent of x
      * @return The new grandparent
      */
-    protected Node RL_Rotation(Node p) {
+    protected Node RL_Rotate(Node p) {
         var x = (Node) p.getLeftChild();
         var g = (Node) p.getParent();
 
-        LL_Rotation(x, p);
-        RR_Rotation(x, g);
+        LL_Rotate(x, p);
+        RR_Rotate(x, g);
 
         return x;
     }
 
     /**
      * Automatically performs the correct rotation based on x's role in the tree
-     *
-     * @return
+     * @return the new grandparent node
      */
-    protected Node rotate(Node p, Node x) {
+    protected Node rotate(Node x) {
+        var p = (Node) x.getParent();
         Node res;
-        if (p.isLeftChild() && (x == null || x.isLeftChild())) {
+        if (p.isLeftChild() && x.isLeftChild()) {
             System.out.println("Performing Left-Left Rotation with parent = " + p);
-            res = LL_Rotation(p);
+            res = LL_Rotate(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
             System.out.println("Performing Left-Right Rotation with parent = " + p);
-            res = LR_Rotation(p);
-        } else if (p.isRightChild() && (x == null || x.isRightChild())) {
+            res = LR_Rotate(p);
+        } else if (p.isRightChild() && x.isRightChild()) {
             System.out.println("Performing Right-Right Rotation with parent = " + p);
-            res = RR_Rotation(p);
+            res = RR_Rotate(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
             System.out.println("Performing Right-Left Rotation with parent = " + p);
-            res = RL_Rotation(p);
+            res = RL_Rotate(p);
+        } else throw new Error("This should never happen");
+
+        printTreeToConsole();
+        return res;
+    }
+
+    /**
+     * Automatically performs the correct outside-outside rotation based on p's role in the tree
+     * @return the new grandparent node
+     */
+    protected Node OO_Rotate(Node p) {
+        Node res;
+        if (p.isLeftChild()) {
+            System.out.println("Performing Left-Left Rotation with parent = " + p);
+            res = LL_Rotate(p);
+        } else if (p.isRightChild()) {
+            System.out.println("Performing Right-Right Rotation with parent = " + p);
+            res = RR_Rotate(p);
         } else throw new Error("This should never happen");
 
         printTreeToConsole();
@@ -179,20 +195,21 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
      *
      * @return The new grandparent
      */
-    protected Node restructure(Node p, Node x) {
+    protected Node restructure(Node x) {
+        Node p = (Node) x.getParent();
         Node res;
-        if (p.isLeftChild() && (x == null || x.isLeftChild())) {
+        if (p.isLeftChild() && x.isLeftChild()) {
             System.out.println("Performing Left-Left Restructure with parent = " + p);
-            res = LL_Rotation(p);
+            res = LL_Rotate(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
             System.out.println("Performing Left-Right Restructure with parent = " + p);
-            res = LR_Rotation(p);
-        } else if (p.isRightChild() && (x == null || x.isRightChild())) {
+            res = LR_Rotate(p);
+        } else if (p.isRightChild() && x.isRightChild()) {
             System.out.println("Performing Right-Right Restructure with parent = " + p);
-            res = RR_Rotation(p);
+            res = RR_Rotate(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
             System.out.println("Performing Right-Left Restructure with parent = " + p);
-            res = RL_Rotation(p);
+            res = RL_Rotate(p);
         } else throw new Error("This should never happen");
 
         printTreeToConsole();
