@@ -24,6 +24,9 @@ public class FallBackFont {
 					result.addAttribute(TextAttribute.FONT, fallbackFont, fallbackBegin, i);
 			}
 		}
+		if(usingFallback){
+			result.addAttribute(TextAttribute.FONT, fallbackFont, fallbackBegin, text.length());
+		}
 
 		return result;
 	}

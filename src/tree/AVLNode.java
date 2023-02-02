@@ -25,8 +25,13 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     }
 
     @Override
+    public AVLNode<T> getSibling () {
+        return (AVLNode<T>) super.getSibling();
+    }
+
+    @Override
     public String toString() {
         // °⁺⁻
-        return super.toString() + (getBalanceFactor() == 1 ? " \u207A" : getBalanceFactor() == -1 ? " \u207B" : " \u00B0");
+        return super.toString() + (getBalanceFactor() == 1 ? "\u207A" : getBalanceFactor() == -1 ? "\u207B" : "");
     }
 }
