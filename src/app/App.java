@@ -54,9 +54,9 @@ public class App extends JFrame {
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					evaluateCommand();
 				} else if (e.getKeyCode() == KeyEvent.VK_MINUS && e.isControlDown()) {
-					TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize2D() * 0.9f);
+					TreeDrawer.setFontSize(TreeDrawer.getFontSize() * 0.9f);
 				} else if (e.getKeyCode() == KeyEvent.VK_EQUALS && e.isControlDown()) {
-					TreeDrawer.font = TreeDrawer.font.deriveFont(TreeDrawer.font.getSize2D() * 1.1f);
+					TreeDrawer.setFontSize(TreeDrawer.getFontSize() * 1.1f);
 				} else {
 					char c = e.getKeyChar();
 					if ((c + "").matches("^[ -~]$")) input += c;

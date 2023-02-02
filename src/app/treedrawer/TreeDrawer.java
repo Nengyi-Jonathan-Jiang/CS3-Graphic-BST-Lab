@@ -3,6 +3,7 @@ package app.treedrawer;
 import tree.AbstractBST;
 import tree.BSTNode;
 import tree.RBTNode;
+import util.FallBackFont;
 import util.FontLoader;
 import values.NumberOrString;
 
@@ -13,6 +14,16 @@ import java.util.*;
 
 public abstract class TreeDrawer {
 	public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
+	public static Font ffont = FontLoader.load("Consolas.ttf").deriveFont(12f);
+
+	public static void setFontSize(float size) {
+		font = font.deriveFont(size);
+		ffont = ffont.deriveFont(size);
+	}
+	public static float getFontSize(){
+		return font.getSize2D();
+	}
+
 	private static final Graphics dummyGraphics = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getGraphics();
 
 	public static int getNodePadding () {
@@ -85,7 +96,12 @@ public abstract class TreeDrawer {
 					if (node.getValue() instanceof NumberOrString && ((NumberOrString) node.getValue()).isString()) {
 						graphics.setColor(Color.GREEN.darker());
 					}
-					graphics.drawString(text, X - d.width / 2, Y - fm.getHeight() / 2 + fm.getAscent());
+					graphics.drawString(
+						FallBackFont.createFallbackString(text, font, ffont).getIterator(),
+						//text,
+						X - d.width / 2,
+						Y - fm.getHeight() / 2 + fm.getAscent()
+					);
 				}
 			}
 		}
