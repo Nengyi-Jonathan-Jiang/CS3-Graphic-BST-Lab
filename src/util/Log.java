@@ -72,7 +72,7 @@ public class Log {
 	public enum LogLevel {
 
 		Echo(ANSICode.CLEAR, Color.BLACK),
-		Output(ANSICode.BLUE, Color.BLUE),
+		Output(ANSICode.GREEN, Color.BLUE),
 		Error(ANSICode.RED, Color.RED),
 		Normal(ANSICode.GREEN, Color.BLUE);
 
