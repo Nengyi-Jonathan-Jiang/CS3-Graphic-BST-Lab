@@ -11,8 +11,11 @@ public class Log {
 	public static final int NO_TERMINAL = 1, NO_DISPLAY = 2;
 
 	private static void _addMessage (String message, LogLevel level, int flags) {
-		if((flags & NO_DISPLAY) == 0)
-			log.addFirst(new LogItem(message, level));
+		if((flags & NO_DISPLAY) == 0) {
+			synchronized (log) {
+				log.addFirst(new LogItem(message, level));
+			}
+		}
 		if((flags & NO_TERMINAL) == 0)
 			System.out.println(level.tColor + message + ANSICode.CLEAR);
 	}
@@ -54,9 +57,11 @@ public class Log {
 		}
 
 		int i = 0;
-		for (var item : log) {
-			float t = (currentTime - item.startTime) / (float) fadeTime;
-			action.execute(i++, item.message, t, item.level);
+		synchronized (log) {
+			for (var item : log) {
+				float t = (currentTime - item.startTime) / (float) fadeTime;
+				action.execute(i++, item.message, t, item.level);
+			}
 		}
 	}
 

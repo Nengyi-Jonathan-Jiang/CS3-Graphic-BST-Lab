@@ -1,5 +1,6 @@
 package tree;
 
+import org.jetbrains.annotations.*;
 import util.ANSICode;
 import util.Log;
 
@@ -26,12 +27,18 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         }
     }
 
+    protected synchronized void insertAsRoot (T value){
+        assert root == null : "Tried to insert into non-null root";
+
+        root = constructNode(value);
+        printTreeToConsole();
+    }
     /**
      * @param parent The root node to insert under
      * @param value  The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
-    protected boolean add (Node parent, T value) {
+    protected synchronized boolean add (Node parent, T value) {
         int compare = value.compareTo(parent.getValue());
 
         if (compare < 0) {
@@ -51,7 +58,6 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
                 printTreeToConsole();
             }
         }
-        //else return false; // else: Node already in tree, do nothing :)
 
         return true;
     }
@@ -61,7 +67,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return whether the value exists in the tree
      * @throws ClassCastException when value is not a {@link Comparable}
      */
-    public final boolean contains (Object value) {
+    public final synchronized boolean contains (Object value) {
         if (!(value instanceof Comparable<?>)) throw new ClassCastException();
         return find((T) value) != null;
     }
@@ -71,7 +77,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return whether all the values exists in the tree
      * @throws ClassCastException when any of the values is not a {@link Comparable}
      */
-    public final boolean containsAll (Collection<?> values) {
+    public final synchronized boolean containsAll (Collection<?> values) {
         return values.stream().allMatch(this::contains);
     }
 
@@ -79,11 +85,10 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param value The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
-    public boolean add (T value) {
+    public final synchronized boolean add (T value) {
         if (root == null) {
             System.out.println("Inserting " + value + " as root");
-            root = constructNode(value);
-            printTreeToConsole();
+            insertAsRoot(value);
             return true;
         } else return add(root, value);
     }
@@ -92,7 +97,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param values the values to be inserted into the tree.
      * @return whether the collection was changed as a result of this operation
      */
-    public final boolean addAll (Collection<? extends T> values) {
+    public final synchronized boolean addAll (Collection<? extends T> values) {
         return values.stream().map(this::add).toList().contains(true);
     }
 
@@ -102,7 +107,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @throws ClassCastException when value is not a {@link Comparable}
      */
     @Override
-    public final boolean remove (Object value) {
+    public final synchronized boolean remove (Object value) {
         // <rant>
         // I hate how Java generics work
         // Why can't T be treated like a real class name?
@@ -121,25 +126,26 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         if (!(value instanceof Comparable<?>)) return false;    // Can't remove a value that isn't of the right type
 
         // Find the node to be deleted
-        BSTNode<T> target = find((T) value);
+        var target = find((T) value);
 
-        // If target not exist don't do anything
+        // If target not exist in the tree don't do anything
         if (target == null) return false;
 
         if (target == root && target.isLeaf()) {
-            root = null; // If height 0 and delete root, just set root to null
-            return true;
+            root = null;
         }
+        else if (target.getDegree() == 2) {  // If deg 2, must first find inorder successor n and swap
+            // The node to swap with (the inorder successor).
+            // Guaranteed to exist because target must have a right child to be deg 2
+            var swap = (Node) target.getInorderSuccessor();
 
-        if (target.getDegree() == 2) {  // If deg 2, must first find inorder successor n and swap
-            // The node to swap with (the inorder successor)
-            BSTNode<T> swap = target.getInorderSuccessor();
-
+            // Swap the values of the nodes (but not any other information)
             BSTNode.swapValues(target, swap);
 
-            target = swap;
+            deleteSimple(swap);
         }
-        deleteSimple((Node) target);
+        else deleteSimple(target);
+
         return true;
     }
 
@@ -162,7 +168,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param values The values to remove from the tree
      * @return whether the collection was changed as a result of this operation
      */
-    public final boolean removeAll (Collection<?> values) {
+    public final synchronized boolean removeAll (Collection<?> values) {
         return values.stream().map(this::remove).toList().contains(true);
     }
 
@@ -170,6 +176,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param c A collection of values to intersect with this tree
      * @return A new bst.BST containing the elements common to this tree and the given values
      */
+    @Contract(pure = true)
     public final AbstractBST<T, Node> intersection (Collection<?> c){
         AbstractBST<T, Node> res = makeEmptyTree();
         c.stream()
@@ -186,7 +193,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return A new bst.BST containing the elements common to this tree and the given values
      */
     @Override
-    public final boolean retainAll (Collection<?> c) {
+    public final synchronized boolean retainAll (Collection<?> c) {
         var temp = intersection(c);
         boolean res = !new ArrayList<>(this).equals(new ArrayList<>(temp)); // This operation should be O(N) I think
         root = temp.getRoot();  // Just copy the temp tree to this tree
@@ -197,9 +204,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * Removes all items from the tree
      */
     @Override
-    public void clear () {
-        // Well, that was fast...
-        // I would never have thought I would ever say this, but thank god for GC
+    public final synchronized void clear () {
         root = null;
     }
 
@@ -207,7 +212,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param value the value to search for
      * @return the node with that value, or null if the value is not in the tree
      */
-    protected BSTNode<T> find (T value) {
+    protected final synchronized Node find (T value) {
         return find(root, value);
     }
 
@@ -216,36 +221,36 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param value The value to search for
      * @return the {@link BSTNode} with that value, or null if the value is not in the tree
      */
-    protected BSTNode<T> find (BSTNode<T> node, T value) {
+    protected final synchronized Node find (Node node, T value) {
         if (node == null) return null;
 
         int compare = value.compareTo(node.getValue());
 
         if (compare < 0)
-            return find(node.getLeftChild(), value);
+            return find((Node) node.getLeftChild(), value);
         if (compare > 0)
-            return find(node.getRightChild(), value);
+            return find((Node) node.getRightChild(), value);
         return node;
     }
 
     @Override
-    public int size () {
+    public final synchronized int size () {
         return countNodes(root);
     }
 
-    protected int countNodes (BSTNode<T> node) {
+    protected final synchronized int countNodes (BSTNode<T> node) {
         return node == null ? 0 : 1 + countNodes(node.getLeftChild()) + countNodes(node.getRightChild());
     }
 
     /**
      * @return whether the tree is empty
      */
-    public boolean isEmpty () {
+    public final synchronized boolean isEmpty () {
         return root == null;
     }
 
     @Override
-    public Iterator<T> iterator () {
+    public final synchronized Iterator<T> iterator () {
         return root == null ? Collections.emptyIterator() : new Iterator<>() {
             private final Stack<BSTNode<T>> nodes = new Stack<>();
             private BSTNode<T> curr = root;
@@ -267,7 +272,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         };
     }
 
-    public Object[] toArray () {
+    public final synchronized Object[] toArray () {
         // IntelliJ suggests that I replace stream().toArray() with this.toArray()
         // Wow, that would definitely work!
         // Yeah, I want to call toArray() in the toArray() method!
@@ -278,34 +283,34 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         return stream().toArray();
     }
 
-    public <U> U[] toArray (U [] a) {
+    public final synchronized <U> U[] toArray (U [] a) {
         // IDK how hacky this is, I never understood the purpose of this method overload
         return (U[]) toArray();
     }
 
     @Override
-    public String toString () {
+    public final synchronized String toString () {
         return root == null ? "bst.BST{}" : "bst.BST" + root;
     }
 
     /**
      * @return The height of the tree. This is the number of edges from the root to the deepest leaf
      */
-    public final int getHeight () {
+    public final synchronized int getHeight () {
         return root == null ? -1 : root.getHeight();
     }
 
     /**
      * @return The root node of the tree. If the tree is empty, this is null
      */
-    public final Node getRoot () {
+    public final synchronized Node getRoot () {
         return root;
     }
 
     /**
      * @return the number of leaves in the tree
      */
-    public final int countLeaves () {
+    public final synchronized int countLeaves () {
         return countLeaves(root);
     }
 
@@ -313,26 +318,26 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param node the root of the tree to search
      * @return the number of leaves in the tree
      */
-    private int countLeaves (BSTNode<T> node) {
+    private synchronized int countLeaves (BSTNode<T> node) {
         return node == null ? 0 : node.isLeaf() ? 1 : countLeaves(node.getLeftChild()) + countLeaves(node.getRightChild());
     }
 
     /**
      * @return The number of levels in the tree.
      */
-    public final int countLevels () {
+    public final synchronized int countLevels () {
         return getHeight() + 1;
     }
 
-    public final int getWidth () {
+    public final synchronized int getWidth () {
         return Arrays.stream(getLevelWidths()).reduce(0, Math::max);
     }
 
-    public final int getDiameter () {
+    public final synchronized int getDiameter () {
         return root == null ? 0 : 3 + (root.hasLeftChild() ? root.getLeftChild().getHeight() : 0) + (root.hasRightChild() ? root.getRightChild().getHeight() : 0);
     }
 
-    public final boolean isFullTree () {
+    public final synchronized boolean isFullTree () {
         return root == null || isFull(root);
     }
 
@@ -389,7 +394,6 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         // Whatever, I will use it because I am lazy
         return Arrays.stream(getLevels()).mapToInt(i -> (int) Arrays.stream(i).filter(Objects::nonNull).count()).toArray();
     }
-
 
     public void printTreeToConsole() {
         if (isEmpty()) {

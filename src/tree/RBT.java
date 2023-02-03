@@ -71,14 +71,6 @@ public class RBT<T extends Comparable<T>> extends BalancedBST<T, RBTNode<T>> {
     }
 
     /**
-     * @param value the value to search for
-     * @return the node with that value, or null if the value is not in the tree
-     */
-    public RBTNode<T> find(T value) {
-        return (RBTNode<T>) super.find(value);
-    }
-
-    /**
      * @param sib The sibling of the double-black node (We pass in the sibling because node itself may be null).
      */
     private void fixDoubleBlack(RBTNode<T> sib) {

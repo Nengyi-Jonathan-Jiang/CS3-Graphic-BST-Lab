@@ -1,5 +1,7 @@
 package tree;
 
+import util.Log;
+
 public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<T>> extends AbstractBST<T, Node> {
     /**
      * Performs a left-left rotation
@@ -155,16 +157,16 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
         var p = (Node) x.getParent();
         Node res;
         if (p.isLeftChild() && x.isLeftChild()) {
-            System.out.println("Performing Left-Left Rotation with parent = " + p);
+            Log.log("Performing Left-Left Rotation with parent = " + p);
             res = LL_Rotate(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
-            System.out.println("Performing Left-Right Rotation with parent = " + p);
+            Log.log("Performing Left-Right Rotation with parent = " + p);
             res = LR_Rotate(p);
         } else if (p.isRightChild() && x.isRightChild()) {
-            System.out.println("Performing Right-Right Rotation with parent = " + p);
+            Log.log("Performing Right-Right Rotation with parent = " + p);
             res = RR_Rotate(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
-            System.out.println("Performing Right-Left Rotation with parent = " + p);
+            Log.log("Performing Right-Left Rotation with parent = " + p);
             res = RL_Rotate(p);
         } else throw new Error("This should never happen");
 
@@ -179,10 +181,10 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     protected Node OO_Rotate(Node p) {
         Node res;
         if (p.isLeftChild()) {
-            System.out.println("Performing Left-Left Rotation with parent = " + p);
+            Log.log("Performing Left-Left Rotation with parent = " + p);
             res = LL_Rotate(p);
         } else if (p.isRightChild()) {
-            System.out.println("Performing Right-Right Rotation with parent = " + p);
+            Log.log("Performing Right-Right Rotation with parent = " + p);
             res = RR_Rotate(p);
         } else throw new Error("This should never happen");
 
@@ -199,16 +201,16 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
         Node p = (Node) x.getParent();
         Node res;
         if (p.isLeftChild() && x.isLeftChild()) {
-            System.out.println("Performing Left-Left Restructure with parent = " + p);
+            Log.log("Performing Left-Left Restructure with parent = " + p);
             res = LL_Rotate(p);
         } else if (p.isLeftChild() && x.isRightChild()) {
-            System.out.println("Performing Left-Right Restructure with parent = " + p);
+            Log.log("Performing Left-Right Restructure with parent = " + p);
             res = LR_Rotate(p);
         } else if (p.isRightChild() && x.isRightChild()) {
-            System.out.println("Performing Right-Right Restructure with parent = " + p);
+            Log.log("Performing Right-Right Restructure with parent = " + p);
             res = RR_Rotate(p);
         } else if (p.isRightChild() && x.isLeftChild()) {
-            System.out.println("Performing Right-Left Restructure with parent = " + p);
+            Log.log("Performing Right-Left Restructure with parent = " + p);
             res = RL_Rotate(p);
         } else throw new Error("This should never happen");
 
@@ -217,14 +219,9 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     }
 
     @Override
-    public boolean add(T value) {
-        if (root == null) {
-            System.out.println("Inserting " + value + " as root");
-            root = constructNode(value);
-            printTreeToConsole();
-            fixInsert(root);
-            return true;
-        } else return add(root, value);
+    public void insertAsRoot (T value) {
+        super.insertAsRoot(value);
+        fixInsert(root);
     }
 
     /**
@@ -240,7 +237,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
             if (parent.hasLeftChild()) {
                 add((Node) parent.getLeftChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as left child of " + parent);
+                Log.log("Inserting " + value + " as left child of " + parent);
                 var n = constructNode(value);
                 parent.setLeftChild(n);
                 printTreeToConsole();
@@ -250,7 +247,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
             if (parent.hasRightChild()) {
                 add((Node) parent.getRightChild(), value);
             } else {
-                System.out.println("Inserting " + value + " as right child of " + parent);
+                Log.log("Inserting " + value + " as right child of " + parent);
                 var n = constructNode(value);
                 parent.setRightChild(n);
                 printTreeToConsole();
