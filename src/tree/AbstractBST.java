@@ -425,7 +425,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
 
     public void printTreeToConsole() {
         if (isEmpty()) {
-            System.out.println("[Empty Tree]");
+            System.out.println(ANSICode.WHITE + "[Empty Tree]" + ANSICode.CLEAR);
             return;
         }
 

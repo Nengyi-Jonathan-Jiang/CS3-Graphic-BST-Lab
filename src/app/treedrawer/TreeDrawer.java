@@ -1,5 +1,6 @@
 package app.treedrawer;
 
+import tree.AVLNode;
 import tree.AbstractBST;
 import tree.BSTNode;
 import tree.RBTNode;
@@ -83,7 +84,7 @@ public abstract class TreeDrawer {
 
 					var fm = graphics.getFontMetrics();
 
-					graphics.setColor(node instanceof RBTNode ? Color.BLUE : Color.BLACK);
+					graphics.setColor(Color.GRAY);
 					if (node.getParent() != null && h > 0) {
 						graphics.drawLine(X, Y, x[h - 1][i / 2], y[h - 1][i / 2]);
 					}
@@ -91,7 +92,15 @@ public abstract class TreeDrawer {
 					graphics.setColor(Color.WHITE);
 					graphics.fillRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 
-					graphics.setColor(node instanceof RBTNode && RBTNode.getColor((RBTNode<?>) node) == RBTNode.Color.RED ? Color.RED : Color.BLACK);
+					graphics.setColor(
+						node instanceof RBTNode ?
+							RBTNode.getColor((RBTNode<?>) node) == RBTNode.Color.RED ? Color.RED : Color.BLACK
+						: node instanceof AVLNode ?
+						    ((AVLNode<? extends Comparable<?>>) node).isLeftHeavy() ? Color.RED
+						    : ((AVLNode<? extends Comparable<?>>) node).isRightHeavy() ? Color.BLUE
+							: Color.BLACK
+						  : Color.BLACK
+					);
 					graphics.drawRect(X - d.width / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), d.width + getNodePadding() * 2, d.height + getNodePadding() * 2);
 					if (node.getValue() instanceof NumberOrString && ((NumberOrString) node.getValue()).isString()) {
 						graphics.setColor(Color.GREEN.darker());

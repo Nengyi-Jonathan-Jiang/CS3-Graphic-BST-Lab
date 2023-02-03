@@ -17,7 +17,7 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
         return getBalanceFactor() > 0;
     }
     public boolean isRightHeavy(){
-        return getBalanceFactor() < 1;
+        return getBalanceFactor() < 0;
     }
     public boolean isPerfectlyBalanced(){
         return getBalanceFactor() == 0;
