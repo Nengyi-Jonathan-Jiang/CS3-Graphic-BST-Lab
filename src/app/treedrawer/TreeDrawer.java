@@ -40,7 +40,7 @@ public abstract class TreeDrawer {
 		return getRenderedStringSize(node.toString()).width + getNodePadding() * 4;
 	}
 
-	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics);
+	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height);
 
 	public final void drawTree (AbstractBST<?, ?> bst, int windowWidth, Graphics2D graphics) {
 		final int height = bst.countLevels();
@@ -54,7 +54,7 @@ public abstract class TreeDrawer {
 		else {
 			levels = bst.getNodesAtLevels();
 
-			x = calculatePositions(levels, height, windowWidth, graphics);
+			x = calculatePositions(levels, height);
 		}
 
 		int[][] y = new int[height][];

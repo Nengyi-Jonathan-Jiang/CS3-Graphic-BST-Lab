@@ -1,5 +1,8 @@
 package values;
 
+import org.jetbrains.annotations.NotNull;
+
+@SuppressWarnings("unused")
 public class NumberOrString implements Comparable<NumberOrString> {
 	public final Object value;
 	private final type t;
@@ -22,7 +25,7 @@ public class NumberOrString implements Comparable<NumberOrString> {
 	}
 
 	@Override
-	public int compareTo (NumberOrString o) {
+	public int compareTo (@NotNull NumberOrString o) {
 		return !isString() && !o.isString()
 		       ? Double.compare(getDoubleVal(), o.getDoubleVal())
 		       : getStringVal().equals(o.getStringVal())

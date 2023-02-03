@@ -1,8 +1,5 @@
 package tree;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     public AVLNode(T value) {
         super(value);
@@ -25,9 +22,6 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     }
     public boolean isRightHeavy(){
         return getBalanceFactor() < 0;
-    }
-    public boolean isPerfectlyBalanced(){
-        return getBalanceFactor() == 0;
     }
 
     @Override

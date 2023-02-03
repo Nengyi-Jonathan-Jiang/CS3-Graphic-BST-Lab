@@ -17,10 +17,6 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 		return node == null ? Color.BLACK : node.getColor();
 	}
 
-	public boolean isBlack(){
-		return getColor() == Color.BLACK;
-	}
-
 	public boolean isRed(){
 		return getColor() == Color.RED;
 	}

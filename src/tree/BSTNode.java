@@ -1,8 +1,5 @@
 package tree;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class BSTNode<T extends Comparable<T>> {
 	protected BSTNode<T> left = null, right = null, parent = null;
 	protected T value;
@@ -11,12 +8,6 @@ public class BSTNode<T extends Comparable<T>> {
 
 	public BSTNode (T value) {
 		this.value = value;
-	}
-
-	private BSTNode(T value, BSTNode<T> left, BSTNode<T> right){
-		this(value);
-		this.setLeftChild(left);
-		this.setRightChild(right);
 	}
 
 	/**
