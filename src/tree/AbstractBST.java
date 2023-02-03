@@ -177,14 +177,16 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return A new bst.BST containing the elements common to this tree and the given values
      */
     @Contract(pure = true)
-    public final AbstractBST<T, Node> intersection (Collection<?> c){
+    public final @NotNull AbstractBST<T, Node> intersection (@NotNull Collection<?> c){
         AbstractBST<T, Node> res = makeEmptyTree();
         c.stream()
                 .filter(this::contains) // Filter out the elements that are not in this tree
                 .map(i -> (T) i)    // Cast the elements to type T (to Comparable, after erasure)
-                .map(this::find)    // Get the actual
+                .map(this::find)    // Get the actual element in the tree
+                .filter(Objects::nonNull)
                 .map(BSTNode::getValue)
                 .forEach(res::add);
+
         return res;
     }
 
@@ -193,7 +195,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @return A new bst.BST containing the elements common to this tree and the given values
      */
     @Override
-    public final synchronized boolean retainAll (Collection<?> c) {
+    public final synchronized boolean retainAll (@NotNull Collection<?> c) {
         var temp = intersection(c);
         boolean res = !new ArrayList<>(this).equals(new ArrayList<>(temp)); // This operation should be O(N) I think
         root = temp.getRoot();  // Just copy the temp tree to this tree
@@ -212,7 +214,8 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param value the value to search for
      * @return the node with that value, or null if the value is not in the tree
      */
-    protected final synchronized Node find (T value) {
+    @Contract(pure = true)
+    protected final @Nullable Node find (T value) {
         return find(root, value);
     }
 
@@ -221,7 +224,8 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
      * @param value The value to search for
      * @return the {@link BSTNode} with that value, or null if the value is not in the tree
      */
-    protected final synchronized Node find (Node node, T value) {
+    @Contract(pure = true)
+    protected final @Nullable Node find (Node node, T value) {
         if (node == null) return null;
 
         int compare = value.compareTo(node.getValue());
@@ -234,23 +238,27 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     }
 
     @Override
-    public final synchronized int size () {
+    @Contract(pure = true)
+    public final int size () {
         return countNodes(root);
     }
 
-    protected final synchronized int countNodes (BSTNode<T> node) {
+    @Contract(pure = true)
+    protected final int countNodes (BSTNode<T> node) {
         return node == null ? 0 : 1 + countNodes(node.getLeftChild()) + countNodes(node.getRightChild());
     }
 
     /**
      * @return whether the tree is empty
      */
+    @Contract(pure = true)
     public final synchronized boolean isEmpty () {
         return root == null;
     }
 
     @Override
-    public final synchronized Iterator<T> iterator () {
+    @Contract(pure = true)
+    public final synchronized @NotNull Iterator<T> iterator () {
         return root == null ? Collections.emptyIterator() : new Iterator<>() {
             private final Stack<BSTNode<T>> nodes = new Stack<>();
             private BSTNode<T> curr = root;
@@ -272,7 +280,8 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         };
     }
 
-    public final synchronized Object[] toArray () {
+    @Contract(pure = true)
+    public final synchronized Object @NotNull [] toArray () {
         // IntelliJ suggests that I replace stream().toArray() with this.toArray()
         // Wow, that would definitely work!
         // Yeah, I want to call toArray() in the toArray() method!
@@ -283,7 +292,8 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         return stream().toArray();
     }
 
-    public final synchronized <U> U[] toArray (U [] a) {
+    @Contract(pure = true)
+    public final synchronized <U> U @NotNull [] toArray (U [] a) {
         // IDK how hacky this is, I never understood the purpose of this method overload
         return (U[]) toArray();
     }
@@ -296,6 +306,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     /**
      * @return The height of the tree. This is the number of edges from the root to the deepest leaf
      */
+    @Contract(pure = true)
     public final synchronized int getHeight () {
         return root == null ? -1 : root.getHeight();
     }
@@ -303,6 +314,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     /**
      * @return The root node of the tree. If the tree is empty, this is null
      */
+    @Contract(pure = true)
     public final synchronized Node getRoot () {
         return root;
     }
@@ -310,6 +322,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     /**
      * @return the number of leaves in the tree
      */
+    @Contract(pure = true)
     public final synchronized int countLeaves () {
         return countLeaves(root);
     }
@@ -325,18 +338,31 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
     /**
      * @return The number of levels in the tree.
      */
+    @Contract(pure = true)
     public final synchronized int countLevels () {
         return getHeight() + 1;
     }
 
+    /**
+     * @return The maximum number of nodes on any level of the tree
+     */
+    @Contract(pure = true)
     public final synchronized int getWidth () {
         return Arrays.stream(getLevelWidths()).reduce(0, Math::max);
     }
 
+    /**
+     * @return The number of the nodes in the longest path from any node in the left subtree to any node in the right subtree
+     */
+    @Contract(pure = true)
     public final synchronized int getDiameter () {
         return root == null ? 0 : 3 + (root.hasLeftChild() ? root.getLeftChild().getHeight() : 0) + (root.hasRightChild() ? root.getRightChild().getHeight() : 0);
     }
 
+    /**
+     * @return Whether the tree is a full BST. A full BST has no nodes with degree 1. An empty tree is not full
+     */
+    @Contract(pure = true)
     public final synchronized boolean isFullTree () {
         return root == null || isFull(root);
     }
@@ -345,6 +371,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         return node.getDegree() == 0 || node.getDegree() == 2 && isFull(node.getLeftChild()) && isFull(node.getRightChild());
     }
 
+    @Contract(pure = true)
     public final T getLargest () {
         return root == null ? null : getLargest(root);
     }
@@ -353,6 +380,7 @@ public abstract class AbstractBST <T extends Comparable<T>, Node extends BSTNode
         return node.hasRightChild() ? getLargest(node.getRightChild()) : node.getValue();
     }
 
+    @Contract(pure = true)
     public final T getSmallest () {
         return root == null ? null : getSmallest(root);
     }
