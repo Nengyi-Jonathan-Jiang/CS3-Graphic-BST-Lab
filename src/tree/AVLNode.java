@@ -1,5 +1,8 @@
 package tree;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
     public AVLNode(T value) {
         super(value);
@@ -9,6 +12,10 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
         return getHeight(left) - getHeight(right);
     }
 
+
+    // Interestingly, the AVL algorithm still works no matter what max height diff we set. Of course, tolerating larger
+    // height differences means that the tree can get more unbalanced.
+    // For trees with higher max height difference, a randomly generated tree starts looking like a bunch of grapes :D
     public boolean isUnbalanced(){
         return Math.abs(getBalanceFactor()) > 1;
     }
@@ -45,7 +52,6 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
 
     @Override
     public String toString() {
-        // °⁺⁻
-        return super.toString() + (getBalanceFactor() == 1 ? "\u207A" : getBalanceFactor() == -1 ? "\u207B" : "");
+         return super.toString() + "⁻²,⁻,,⁺,⁺²".split(",")[getBalanceFactor() + 2];
     }
 }
