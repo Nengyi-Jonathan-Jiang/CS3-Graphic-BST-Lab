@@ -8,7 +8,7 @@ import java.util.*;
 public class TreeDrawerStacked extends TreeDrawer {
 
 	@Override
-	public int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+	public int[][] calculatePositions (BSTNode<?>[][] levels, int height) {
 		final int LR_OFFSET = getNodePadding() * 2;
 
 		final int[][] widths = new int[height][];

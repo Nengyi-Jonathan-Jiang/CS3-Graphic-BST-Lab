@@ -9,7 +9,7 @@ import java.util.*;
 public class TreeDrawerInOrder extends TreeDrawer {
 
 	@Override
-	public int[][] calculatePositions (BSTNode<?>[][] levels, int height, int windowWidth, Graphics2D graphics) {
+	public int[][] calculatePositions (BSTNode<?>[][] levels, int height) {
 		// Inorder traversal
 
 		int[][] x = new int[height][];
