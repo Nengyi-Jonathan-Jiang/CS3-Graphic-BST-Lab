@@ -1,6 +1,9 @@
 package values;
 
 import org.jetbrains.annotations.NotNull;
+import util.Log;
+
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class NumberOrString implements Comparable<NumberOrString> {
@@ -54,5 +57,21 @@ public class NumberOrString implements Comparable<NumberOrString> {
 
 	public static NumberOrString fromStringString (String str) {
 		return str == null ? null : new NumberOrString(str.substring(1, str.length() - 1).replaceAll("\\\\(.)", "$1"));
+	}
+
+	public static NumberOrString getFromScanner (Scanner scan){
+		String STRING_MATCHING_REGEX = "\"([^\"\\\\]|\\\\.){1,10}\"|'([^'\\\\]|\\\\.){1,10}'";
+
+		NumberOrString v;
+		String vs;
+
+		if (scan.hasNextInt()) {
+			return new NumberOrString(scan.nextInt());
+		} else if (scan.hasNextDouble()) {
+			return new NumberOrString(scan.nextDouble());
+		} else if ((v = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX))) != null) {
+			return v;
+		}
+		return null;
 	}
 }

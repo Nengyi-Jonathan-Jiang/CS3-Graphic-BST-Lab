@@ -1,5 +1,7 @@
 package util;
 
+import app.Style;
+
 import java.awt.Color;
 import java.util.*;
 
@@ -23,11 +25,6 @@ public class Log {
 	public static void err(String message) { err(message, 0); }
 	public static void err (String message, int flags) {
 		_addMessage(message, LogLevel.Error, flags);
-	}
-
-	public static void warn(String input) { warn(input, 0); }
-	public static void warn (String input, int flags) {
-		_addMessage(input, LogLevel.Echo, flags);
 	}
 
 	public static void log(String message) { log(message, 0); }
@@ -71,10 +68,10 @@ public class Log {
 
 	public enum LogLevel {
 
-		Echo(ANSICode.CLEAR, Color.BLACK),
-		Output(ANSICode.GREEN, Color.BLUE),
-		Error(ANSICode.RED, Color.RED),
-		Normal(ANSICode.GREEN, Color.BLUE);
+		Echo(ANSICode.CLEAR, Color.WHITE),
+		Output(ANSICode.GREEN, Style.Colors.GREEN),
+		Error(ANSICode.RED, Style.Colors.RED),
+		Normal(ANSICode.GREEN, Style.Colors.GREEN);
 
 		public final ANSICode tColor;
 		public final Color gColor;

@@ -13,7 +13,8 @@ public class Main {
 		if(args.contains("--color"))
 			ANSICode.enable();
 
-		new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLTree<>() : new BST<>());
+		// new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLTree<>() : new BST<>());
+		new App(new AVLTree<>());
 
 		/*
 		 * insert 221 11 779 73 327 215 422 799 469 159

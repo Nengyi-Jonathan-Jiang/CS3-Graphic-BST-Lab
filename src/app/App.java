@@ -4,6 +4,7 @@ import app.treedrawer.*;
 import tree.AbstractBST;
 import tree.Traversal;
 import util.FontLoader;
+import util.GraphicsUtil;
 import util.Log;
 import values.NumberOrString;
 
@@ -93,26 +94,17 @@ public class App extends JFrame {
 		switch (command = scan.next().toLowerCase()) {
 			case "insert" -> {
 				while (scan.hasNext()) {
-					NumberOrString v;
-					String vs;
+					NumberOrString v = NumberOrString.getFromScanner(scan);
 
-					if (scan.hasNextInt()) {
-						v = new NumberOrString(scan.nextInt());
-						vs = v.toString();
-					} else if (scan.hasNextDouble()) {
-						v = new NumberOrString(scan.nextDouble());
-						vs = v.toString();
-					} else if ((v = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX))) != null) {
-						vs = "\"" + v + "\"";
-					} else {
-						Log.err("Bad input: \"" + scan.next() + "\" is not an int, double, or string.");
+					if (v == null) {
+						Log.err("Bad input: \"" + scan.next() + "\" is not an int, double, or valid string.");
 						break;
 					}
 
-					Log.log("Adding " + vs + " to the tree");
+					Log.log("Adding " + v + " to the tree");
 					bst.printTreeToConsole();
 					bst.add(v);
-					Log.log("Added " + vs + " to the tree");
+					Log.log("Added " + v + " to the tree");
 				}
 			}
 			case "insertrand" -> {
@@ -138,27 +130,23 @@ public class App extends JFrame {
 			}
 			case "delete" -> {
 				while (scan.hasNext()) {
-					Object val;
-					if (scan.hasNextInt()) {
-						val = new NumberOrString(scan.nextInt());
-					} else if (scan.hasNextDouble()) {
-						val = new NumberOrString(scan.nextDouble());
-					} else if (((NumberOrString) (val = NumberOrString.fromStringString(scan.findInLine(STRING_MATCHING_REGEX)))).value != null)
-						;
-					else {
-						Log.err("Bad input: \"" + scan.next() + "\" is not an int.");
-						continue;
+					NumberOrString v = NumberOrString.getFromScanner(scan);
+
+					if (v == null) {
+						Log.err("Bad input: \"" + scan.next() + "\" is not an int, double, or valid string.");
+						break;
 					}
 
-					if (!bst.contains(val)) {
-						Log.warn(val + " is not in the tree");
-					} else {
-						Log.log("Deleting " + val + " from the tree");
-						bst.printTreeToConsole();
-						bst.remove(val);
-						bst.printTreeToConsole();
-						Log.log("Deleted " + val + " from the tree");
+					if (!bst.contains(v)) {
+						Log.log(v + " is not in the tree");
+						break;
 					}
+
+					Log.log("Deleting " + v + " from the tree");
+					bst.printTreeToConsole();
+					bst.remove(v);
+					bst.printTreeToConsole();
+					Log.log("Deleted " + v + " from the tree");
 				}
 			}
 			case "help" -> {
@@ -260,7 +248,7 @@ public class App extends JFrame {
 		((Graphics2D) gg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		((Graphics2D) gg).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		gg.setColor(Color.WHITE);
+		gg.setColor(Style.Colors.BLACK);
 		gg.fillRect(0, 0, getWidth(), getHeight());
 
 		drawStuff((Graphics2D) gg);
@@ -269,18 +257,39 @@ public class App extends JFrame {
 	}
 
 	private void drawStuff (Graphics2D graphics) {
-		styles[currStyle].drawTree(bst, getWidth(), graphics);
+		styles[currStyle].drawTree(bst, getWidth(), getHeight(), graphics);
 
 		long currentTime = System.currentTimeMillis();
 
-		graphics.setColor(Color.BLACK);
+		graphics.setColor(Style.Colors.FG);
 		graphics.setFont(font);
 		graphics.drawString(">>> " + input + (currentTime % BLINKER_TIME > BLINKER_TIME / 3 ? "█" : ""), 20, getHeight() - 20);
 
 		Log.forEachLogItem((int i, String message, float t, Log.LogLevel level) -> {
 			double opacity = 1 - Math.pow(t, 4);
 			Color color = level.gColor;
-			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(Math.min((int) (opacity * 255), 255), 0)));
+
+			var w = GraphicsUtil.getRenderedStringSize(message, font).width;
+
+			graphics.setColor(new Color(
+				Style.Colors.BLACK.getRed(),
+				Style.Colors.BLACK.getGreen(),
+				Style.Colors.BLACK.getBlue(),
+				Math.max(Math.min((int) (opacity * 200), 200), 0))
+			);
+			graphics.fillRect(
+				0,
+				getHeight() - 16 - (font.getSize() * 4 / 3) * (i + 2),
+				w + 40,
+				font.getSize() * 4 / 3
+			);
+
+			graphics.setColor(new Color(
+				color.getRed(),
+				color.getGreen(),
+				color.getBlue(),
+				Math.max(Math.min((int) (opacity * 255), 255), 0)
+			));
 			graphics.drawString(message, 20, getHeight() - 20 - (font.getSize() * 4 / 3) * (i + 1));
 		});
 	}
