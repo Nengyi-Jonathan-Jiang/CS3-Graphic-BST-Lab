@@ -1,6 +1,7 @@
 import app.App;
 import tree.AVLTree;
 import tree.BST;
+import tree.JolaTree;
 import tree.RBT;
 import util.ANSICode;
 
@@ -14,7 +15,7 @@ public class Main {
 			ANSICode.enable();
 
 		// new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLTree<>() : new BST<>());
-		new App(new AVLTree<>());
+		new App(new JolaTree<>());
 
 		/*
 		 * insert 221 11 779 73 327 215 422 799 469 159
