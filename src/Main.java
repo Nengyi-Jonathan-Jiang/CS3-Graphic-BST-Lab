@@ -1,27 +1,18 @@
 import app.App;
-import tree.AVLTree;
-import tree.BST;
-import tree.JolaTree;
-import tree.RBT;
+import graphics.Window;
 import util.ANSICode;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class Main {
-	public static void main (String[] _args) {
-		var args = Arrays.asList(_args);
+    public static void main(String[] _args) {
+        Window.enableHardwareAcceleration();
 
-		if(args.contains("--color"))
-			ANSICode.enable();
+        var args = Arrays.asList(_args);
 
-		// new App(args.contains("--rb") ? new RBT<>() : args.contains("--avl") ? new AVLTree<>() : new BST<>());
-		new App(new JolaTree<>());
+        if (args.contains("--color"))
+            ANSICode.enable();
 
-		/*
-		 * insert 221 11 779 73 327 215 422 799 469 159
-		 * delete 11 327 422 469
-		 * insert 765 306 126 621 130 536 106 496 312 420
-		 * delete 215 536 765
-		 */
-	}
+        new App();
+    }
 }

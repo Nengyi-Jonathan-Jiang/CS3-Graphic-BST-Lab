@@ -151,6 +151,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
 
     /**
      * Automatically performs the correct rotation based on x's role in the tree
+     *
      * @return the new grandparent node
      */
     protected Node rotate(Node x) {
@@ -176,6 +177,7 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
 
     /**
      * Automatically performs the correct outside-outside rotation based on p's role in the tree
+     *
      * @return the new grandparent node
      */
     protected Node OO_Rotate(Node p) {
@@ -219,14 +221,14 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
     }
 
     @Override
-    public void insertAsRoot (T value) {
+    public void insertAsRoot(T value) {
         super.insertAsRoot(value);
         fixInsert(root);
     }
 
     /**
      * @param parent The root node to insert under
-     * @param value   The value to insert into the tree
+     * @param value  The value to insert into the tree
      * @return whether the tree changed as a result of this call
      */
     @Override
@@ -260,14 +262,8 @@ public abstract class BalancedBST<T extends Comparable<T>, Node extends BSTNode<
 
     /**
      * Should be overridden by subclasses to fix imbalance after insertion.
+     *
      * @param node The changed node
      */
-    protected abstract void fixInsert (Node node);
-
-    /**
-     * Constructs a {@link Node} to use in the tree. This should be overridden by subclasses to return the right kind of
-     * BSTNode to use in the tree
-     * @param value The value to put in the node
-     */
-    protected abstract Node constructNode(T value);
+    protected abstract void fixInsert(Node node);
 }

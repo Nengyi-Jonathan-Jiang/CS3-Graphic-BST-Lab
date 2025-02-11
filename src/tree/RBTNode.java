@@ -1,5 +1,7 @@
 package tree;
 
+import org.jetbrains.annotations.NotNull;
+
 public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	public enum Color {RED, BLACK}
 
@@ -57,7 +59,7 @@ public class RBTNode<T extends Comparable<T>> extends BSTNode<T> {
 	}
 
 	@Override
-	public BSTNode<T> makeRoot () {
+	public @NotNull BSTNode<T> makeRoot () {
 		color = Color.BLACK;
 		return super.makeRoot();
 	}

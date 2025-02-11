@@ -1,143 +1,87 @@
 package app.treedrawer;
 
+import app.GraphicsTreeNode;
 import app.Style;
+import graphics.BoundingBox1D;
+import graphics.JGraphics;
 import tree.AVLNode;
 import tree.AbstractBST;
-import tree.BSTNode;
 import tree.RBTNode;
-import util.FontLoader;
 import util.GraphicsUtil;
 
 import java.awt.*;
-import java.util.*;
 
-public abstract class TreeDrawer {
-	public static Font font = FontLoader.load("JBMono.ttf").deriveFont(12f);
-	public static Font ffont = FontLoader.load("Consolas.ttf").deriveFont(12f);
+public class TreeDrawer {
+    public final void drawTree(AbstractBST<?, ?> bst, JGraphics jGraphics) {
+        drawNodes(
+            GraphicsTreeNode.create(bst.getRoot()),
+            0,
+            jGraphics
+        );
+    }
 
-	public static void setFontSize(float size) {
-		font = font.deriveFont(size);
-		ffont = ffont.deriveFont(size);
-	}
-	public static float getFontSize(){
-		return font.getSize2D();
-	}
+    private void drawNodes(GraphicsTreeNode<?> node, int yy, JGraphics graphics) {
+        if (node == null) return;
 
-	public static int getNodePadding () {
-		return font.getSize() / 2;
-	}
+        drawNodes(node.left, yy + 1, graphics);
+        drawNodes(node.right, yy + 1, graphics);
 
-	protected static int getRenderedSize(BSTNode<?> node){
-		return
-			Math.max(
-				GraphicsUtil.getRenderedStringSize(node.toString(), font).width,
-				GraphicsUtil.getRenderedStringSize(node.toString(), font).height
-			)
-			+ getNodePadding() * 4;
-	}
+        double textHeight = GraphicsUtil.getRenderedStringSize("test string", GraphicsTreeNode.font).height;
+        double yOffset = GraphicsTreeNode.getNodePadding() + 40 + textHeight / 2;
+        double y = yy * 6 * GraphicsTreeNode.getNodePadding() + yOffset;
 
-	protected abstract int[][] calculatePositions (BSTNode<?>[][] levels, int height);
+        BoundingBox1D bounds = node.nodeBounds;
+        String text = node.node.toString();
 
-	public final void drawTree (AbstractBST<?, ?> bst, int windowWidth, int windowHeight, Graphics2D graphics) {
-		final int height = bst.countLevels();
-		BSTNode<?>[][] levels;
-		int[][] x;
+        if (node.parent != null) {
+            graphics.setColor(Style.Colors.DM);
+            graphics.drawLine(
+                bounds.center(), y,
+                node.parent.nodeBounds.center(),
+                y - 6 * GraphicsTreeNode.getNodePadding()
+            );
+        }
 
-		if (bst.isEmpty()){
-			levels = new BSTNode<?>[][]{};
-			x = new int[][]{};
-		}
-		else {
-			levels = bst.getNodesAtLevels();
+        var d = GraphicsUtil.getRenderedStringSize(text, GraphicsTreeNode.font);
 
-			x = calculatePositions(levels, height);
-		}
+        var fm = graphics.originalGraphics().getFontMetrics();
 
-		int[][] y = new int[height][];
-		{
-			int textHeight = GraphicsUtil.getRenderedStringSize("test string", font).height;
+        Color backgroundColor, borderColor, textColor;
+        if (node.node instanceof RBTNode) {
+            if (((RBTNode<? extends Comparable<?>>) node.node).isRed()) {
+                backgroundColor = borderColor = Style.Colors.RED;
+                textColor = Style.Colors.BLACK;
+            } else {
+                backgroundColor = Style.Colors.BLACK;
+                borderColor = textColor = Style.Colors.GREEN;
+            }
+        } else if (node.node instanceof AVLNode) {
+            backgroundColor = Style.Colors.BLACK;
+            if (((AVLNode<? extends Comparable<?>>) node.node).isLeftHeavy()) {
+                borderColor = textColor = Style.Colors.RED;
+            } else if (((AVLNode<? extends Comparable<?>>) node.node).isRightHeavy()) {
+                borderColor = textColor = Style.Colors.BLUE;
+            } else {
+                borderColor = textColor = Style.Colors.GREEN;
+            }
+        } else {
+            backgroundColor = Style.Colors.BLACK;
+            borderColor = textColor = Style.Colors.GREEN;
+        }
 
-			// Black magic. Calculates a nice position for the tree to center it
-			// int yOffset =  (windowHeight + textHeight) / 2 - (height - 1) * 3 * getNodePadding() + 4;
-			int yOffset = getNodePadding() + 40 + textHeight / 2;
+        double ovalLeft = bounds.left() + GraphicsTreeNode.getNodePadding();
+        double ovalTop = y - d.height / 2. - GraphicsTreeNode.getNodePadding();
+        double ovalWidth = bounds.width() - GraphicsTreeNode.getNodePadding() * 2;
+        float ovalHeight = d.height + GraphicsTreeNode.getNodePadding() * 2;
+        double textLeft = bounds.center() - d.width / 2.;
+        double textTop = y - fm.getHeight() / 2. + fm.getAscent();
+        graphics
+            .setColor(backgroundColor).fillOval(ovalLeft, ovalTop, ovalWidth, ovalHeight)
+            .setColor(borderColor).drawOval(ovalLeft, ovalTop, ovalWidth, ovalHeight)
+            .setColor(textColor).setDrawFont(GraphicsTreeNode.font).drawText(text, textLeft, textTop);
 
-			// Now the actual positions
-			for (int h = 0; h < height; h++) {
-				y[h] = new int[1 << h];
-				Arrays.fill(y[h],
-					h * 6 * getNodePadding() + yOffset
-				);
-			}
-		}
+        graphics.setColor(Style.Colors.DM);
+        graphics.drawRect(node.containingBounds.left(), ovalTop, node.containingBounds.width(), ovalHeight);
+    }
 
-		for(int i = 0; i < height; i++){
-			for(int j = 0; j < (1 << i); j++){
-				x[i][j] += windowWidth / 2;
-			}
-		}
-
-		graphics.setFont(font);
-
-		for (int h = height - 1; h >= 0; h--) {
-			for (int i = 0; i < levels[h].length; i++) {
-				var node = levels[h][i];
-
-				if (node != null) {
-					String text = node.toString();
-					var d = GraphicsUtil.getRenderedStringSize(text, font);
-					var w = getRenderedSize(node) - getNodePadding() * 4;
-					int X = x[h][i], Y = y[h][i];
-
-					var fm = graphics.getFontMetrics();
-
-					graphics.setColor(Style.Colors.DM);
-					if (node.getParent() != null && h > 0) {
-						graphics.drawLine(X, Y, x[h - 1][i / 2], y[h - 1][i / 2]);
-					}
-
-					Color bg, bd, fg;
-					if(node instanceof RBTNode){
-						if(((RBTNode<? extends Comparable<?>>) node).isRed()){
-							bg = bd = Style.Colors.RED;
-							fg = Style.Colors.BLACK;
-						}
-						else {
-							bg = Style.Colors.BLACK;
-							bd = fg = Style.Colors.GREEN;
-						}
-					}
-					else if(node instanceof AVLNode){
-						bg = Style.Colors.BLACK;
-						if(((AVLNode<? extends Comparable<?>>) node).isLeftHeavy()){
-							bd = fg = Style.Colors.RED;
-						}
-						else if(((AVLNode<? extends Comparable<?>>) node).isRightHeavy()){
-							bd = fg = Style.Colors.BLUE;
-						}
-						else {
-							bd = fg = Style.Colors.GREEN;
-						}
-					}
-					else {
-						bg = Style.Colors.BLACK;
-						bd = fg = Style.Colors.GREEN;
-					}
-
-					graphics.setColor(bg);
-					graphics.fillOval(X - w / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), w + getNodePadding() * 2, d.height + getNodePadding() * 2);
-
-					graphics.setColor(bd);
-					graphics.drawOval(X - w / 2 - getNodePadding(), Y - d.height / 2 - getNodePadding(), w + getNodePadding() * 2, d.height + getNodePadding() * 2);
-
-					graphics.setColor(fg);
-					graphics.drawString(
-						GraphicsUtil.withFallbackFont(text, font, ffont).getIterator(),
-						//text,
-						X - d.width / 2,
-						Y - fm.getHeight() / 2 + fm.getAscent()
-					);
-				}
-			}
-		}
-	}
 }

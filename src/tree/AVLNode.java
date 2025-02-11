@@ -46,6 +46,6 @@ public class AVLNode<T extends Comparable<T>> extends BSTNode<T> {
 
     @Override
     public String toString() {
-         return super.toString() + "⁻²,⁻,,⁺,⁺²".split(",")[getBalanceFactor() + 2];
+         return super.toString() + "(--),(-),,(+),(++)".split(",")[getBalanceFactor() + 2];
     }
 }
